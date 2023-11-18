@@ -1,32 +1,17 @@
-# Prerequisites
-*.d
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
+# Directories
+bin/
+bin-int/
 
-# Precompiled Headers
-*.gch
-*.pch
+# Visual Studio files and folder
+.vs/
+**.sln
+**.vcxproj
+**.vcxproj.filters
+**.vcxproj.user
 
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
+**.ini
+**.json
 
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
+# assets
+Sandbox/assets/
