@@ -1,6 +1,6 @@
 workspace "EmailSender"
 	architecture "x64"
-	startproject "Application"
+	startproject "EmailSenderApp"
 
 	configurations
 	{
@@ -13,5 +13,5 @@ outputdir = "%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 group "Core"
 	include "ClientAPI"
-	include "Application"
+	include "EmailSenderApp"
 group ""

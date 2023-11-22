@@ -1,5 +1,5 @@
 
-project "Application"
+project "EmailSenderApp"
 	kind "ConsoleApp"
 	language "C++"
 	cppdialect "C++17"
@@ -7,6 +7,10 @@ project "Application"
 
 	targetdir ("%{wks.location}/bin/" .. outputdir .. "/%{prj.name}")
 	objdir ("%{wks.location}/bin-int/" .. outputdir .. "/%{prj.name}")
+
+	pchheader "app_pch.h"
+	pchsource "src/app_pch.cpp"
+
 
 	defines
 	{
@@ -23,7 +27,8 @@ project "Application"
 	includedirs
 	{
 		"src",
-		"%{wks.location}/ClientAPI/src"
+		"%{wks.location}/ClientAPI/src",
+		"%{wks.location}/ClientAPI/vendor/spdlog/include"
 	}
 
 	links
@@ -43,16 +48,16 @@ project "Application"
 		}
 		
 	filter "configurations:Debug"
-		defines "HD_DEBUG"
+		defines "_DEBUG"
 		runtime "Debug"
 		symbols "on"
 
 	filter "configurations:Release"
-		defines "HD_RELEASE"
+		defines "_RELEASE"
 		runtime "Release"
 		optimize "on"
 
 	filter "configurations:Dist"
-		defines "HD_DIST"
+		defines "_DIST"
 		runtime "Release"
 		optimize "on"

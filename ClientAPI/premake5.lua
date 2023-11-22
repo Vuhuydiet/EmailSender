@@ -25,7 +25,8 @@ project "ClientAPI"
 
 	includedirs
 	{
-		"src"
+		"src",
+		"vendor/spdlog/include"
 	}
 
 	libdirs
