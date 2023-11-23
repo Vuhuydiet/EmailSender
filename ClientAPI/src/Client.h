@@ -4,5 +4,6 @@
 #include "Core/Log.h"
 
 #include "Core/Application.h"
+#include "Core/Socket.h"
 
 #include "Renderer/TextPrinter.h"

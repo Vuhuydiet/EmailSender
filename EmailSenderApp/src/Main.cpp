@@ -15,7 +15,6 @@ public:
 	~EmailSender() {}
 
 private:
-
 };
 
 Application* CreateApplication() {

@@ -11,6 +11,7 @@ public:
 	void PushBack(const Line& info) { m_Lines.push_back(info); }
 	template <typename ... Args>
 	void EmplaceBack(Args&&... args) { m_Lines.emplace_back(std::forward<Args>(args)...); }
+	void PopBack() { m_Lines.pop_back(); }
 	void Clear() { m_Lines.clear(); }
 
 	std::vector<Line>::iterator begin() { return m_Lines.begin(); }
