@@ -2,8 +2,27 @@
 #include "UILayer.h"
 
 #include <stdlib.h>
-
 #include "UserInput.h"
+
+// TEMP
+#include <WinSock2.h>
+
+void UILayer::OnAttach()
+{
+	_INFO("Initialised UI");
+
+}
+
+void UILayer::OnAttach()
+{
+	_INFO("Initialised UI");
+
+	m_Socket = Socket::Create();
+	m_Socket->Init(SocketProps(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+
+	// TEMP
+	m_Socket->Connect("127.0.0.1", 2500);
+}
 
 void UILayer::OnAttach()
 {
@@ -15,6 +34,7 @@ void UILayer::OnAttach()
 
 void UILayer::OnDetach()
 {
+	m_Socket->Disconnect();
 }
 
 void UILayer::OnUpdate(float dt)
@@ -24,8 +44,8 @@ void UILayer::OnUpdate(float dt)
 	// Get user input
 	UserInput input = UserInput::Get();
 
-
 	// Process user input
+	bool callsv = false;
 	std::string cmd = input.GetCommand();
 	switch(input.GetType())
 	{
@@ -39,10 +59,10 @@ void UILayer::OnUpdate(float dt)
 		{
 			m_ScreenInfo.Clear();
 		}
-		else if (cmd == "/begin")
+		else if (cmd == "/start")
 		{
 			m_State = State::Sending;
-			m_ScreenInfo.EmplaceBack(Line::Type::App, "Begin collecting messages:");
+			m_ScreenInfo.EmplaceBack(Line::Type::App, "Start collecting messages:");
 		}
 		else if (cmd == "/end")
 		{
@@ -53,10 +73,8 @@ void UILayer::OnUpdate(float dt)
 	case UserInput::Type::ServerCommand:
 		if (cmd == "/send")
 		{
-			// Call the send function
-			m_ScreenInfo.EmplaceBack(Line::Type::Server, "Sending message:");
-			m_ScreenInfo.EmplaceBack(Line::Type::None, m_InputMessages);
-			m_InputMessages.clear();
+			m_ScreenInfo.EmplaceBack(Line::Type::Server, "Sending message...");
+			callsv = true;
 		}
 		break;
 	case UserInput::Type::Message:
@@ -72,17 +90,20 @@ void UILayer::OnUpdate(float dt)
 		break;
 	}
 
-	// Add user input to screen
-	// m_ScreenInfo.EmplaceBack(Line::Type::Client, input.GetInput());
+	if (!callsv)
+		return;
 
 	// Send message to server if user input is server command
+	m_Socket->Send(m_InputMessages);
+	m_InputMessages.clear();
 
 	// Receive server response
-
+	std::string serverResponse = m_Socket->Receive();
+  
 	// Process server response
 
 	// Add Server response to screen
-	// m_ScreenInfo.EmplaceBack(Line::Type::Server, "ok");
+	m_ScreenInfo.EmplaceBack(Line::Type::Server, serverResponse);
 }
 
 void UILayer::OnUIRender()

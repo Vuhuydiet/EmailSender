@@ -28,7 +28,7 @@ public:
 	virtual std::string Receive() = 0;
 
 	static Ref<Socket> Create();
-private:
+protected:
 	int m_Af;
 	int m_Type;
 	int m_Protocol;
