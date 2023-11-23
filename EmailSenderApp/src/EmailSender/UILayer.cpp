@@ -2,16 +2,16 @@
 #include "UILayer.h"
 
 #include <stdlib.h>
-
-<<<<<<< Updated upstream
-void UILayer::OnAttach()
-{
-	_INFO("Initialised UI");
-=======
 #include "UserInput.h"
 
 // TEMP
 #include <WinSock2.h>
+
+void UILayer::OnAttach()
+{
+	_INFO("Initialised UI");
+
+}
 
 void UILayer::OnAttach()
 {
@@ -22,7 +22,14 @@ void UILayer::OnAttach()
 
 	// TEMP
 	m_Socket->Connect("127.0.0.1", 2500);
->>>>>>> Stashed changes
+}
+
+void UILayer::OnAttach()
+{
+	_INFO("Initialised UI");
+
+	m_Socket = Socket::Create();
+	m_Socket->Init(SocketProps());
 }
 
 void UILayer::OnDetach()
@@ -34,27 +41,9 @@ void UILayer::OnUpdate(float dt)
 {
 	TextPrinter::Print("Client: ", TextColor::Blue);
 
-	std::string input;
-	std::getline(std::cin, input);
+	// Get user input
+	UserInput input = UserInput::Get();
 
-	//get user input
-
-<<<<<<< Updated upstream
-	//process input
-	if (input == "/quit") {
-	
-	}
-
-	//send message to sv
-
-	//receive message from sv
-
-	//process message
-
-	m_ScreenInfo.EmplaceBack(Line::Type::Client, input);
-
-	m_ScreenInfo.EmplaceBack(Line::Type::Server, "ok");
-=======
 	// Process user input
 	bool callsv = false;
 	std::string cmd = input.GetCommand();
@@ -84,9 +73,7 @@ void UILayer::OnUpdate(float dt)
 	case UserInput::Type::ServerCommand:
 		if (cmd == "/send")
 		{
-			// Call the send function
 			m_ScreenInfo.EmplaceBack(Line::Type::Server, "Sending message...");
-			//m_ScreenInfo.EmplaceBack(Line::Type::None, m_InputMessages);
 			callsv = true;
 		}
 		break;
@@ -112,23 +99,33 @@ void UILayer::OnUpdate(float dt)
 
 	// Receive server response
 	std::string serverResponse = m_Socket->Receive();
+  
 	// Process server response
 
 	// Add Server response to screen
 	m_ScreenInfo.EmplaceBack(Line::Type::Server, serverResponse);
->>>>>>> Stashed changes
 }
 
 void UILayer::OnUIRender()
 {
 	ClearScreen();
+
 	for (auto& line : m_ScreenInfo) 
 	{
 		line.Display();
 	}
 }
 
-void UILayer::ClearScreen() const {
+void UILayer::ClearScreen()
+{
 	system("CLS");
 	fflush(stdout);
+}
+
+void UILayer::GetMessages(std::string& msg)
+{
+	std::string line;
+	while (std::getline(std::cin, line) && line != "/end") {
+		msg += line;
+	}
 }

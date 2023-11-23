@@ -6,7 +6,7 @@ struct Line
 {
 	enum class Type {
 		None, 
-		Server, Client,
+		Server, Client, App,
 		Info, Warn, Err
 	};
 	
@@ -27,6 +27,7 @@ private:
 		{
 		case Type::Server: return "Server";
 		case Type::Client: return "Client";
+		case Type::App: return "App";
 		case Type::Info: return "INFO";
 		case Type::Warn: return "WARNING";
 		case Type::Err: return "ERROR";

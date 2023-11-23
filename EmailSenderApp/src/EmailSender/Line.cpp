@@ -17,6 +17,10 @@ void Line::Display() const
 		header_col = TextColor::Blue;
 		msg_col = TextColor::White;
 		break;
+	case Line::Type::App:
+		header_col = TextColor::Green;
+		msg_col = TextColor::Green;
+		break;
 	case Line::Type::Info:
 		header_col = TextColor::Blue;
 		msg_col = TextColor::Blue;
@@ -31,6 +35,7 @@ void Line::Display() const
 		break;
 	}
 
-	TextPrinter::Print(header + ": ", header_col);
+	if (type != Line::Type::None)
+		TextPrinter::Print(header + ": ", header_col);
 	TextPrinter::Print(msg + '\n', msg_col);
 }

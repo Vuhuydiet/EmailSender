@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "ws2Socket.h"
 
-
 void ws2Socket::Init(const SocketProps& props)
 {
 	WSADATA wsaData;
@@ -10,7 +9,6 @@ void ws2Socket::Init(const SocketProps& props)
 		// 
 		return;
 	}
-
 
 	m_SocketDescriptor = socket(props.af, props.type, props.protocol);
 
@@ -21,7 +19,6 @@ void ws2Socket::Init(const SocketProps& props)
 	m_Af = props.af;
 	m_Type = props.type;
 	m_Protocol = props.protocol;
-
 }
 
 void ws2Socket::Connect(const std::string& ip, int port)
