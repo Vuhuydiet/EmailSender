@@ -11,25 +11,11 @@ void UILayer::OnAttach()
 {
 	_INFO("Initialised UI");
 
-}
-
-void UILayer::OnAttach()
-{
-	_INFO("Initialised UI");
-
 	m_Socket = Socket::Create();
 	m_Socket->Init(SocketProps(AF_INET, SOCK_STREAM, IPPROTO_TCP));
 
 	// TEMP
 	m_Socket->Connect("127.0.0.1", 2500);
-}
-
-void UILayer::OnAttach()
-{
-	_INFO("Initialised UI");
-
-	m_Socket = Socket::Create();
-	m_Socket->Init(SocketProps());
 }
 
 void UILayer::OnDetach()
@@ -59,7 +45,7 @@ void UILayer::OnUpdate(float dt)
 		{
 			m_ScreenInfo.Clear();
 		}
-		else if (cmd == "/start")
+		else if (cmd == "/begin")
 		{
 			m_State = State::Sending;
 			m_ScreenInfo.EmplaceBack(Line::Type::App, "Start collecting messages:");
