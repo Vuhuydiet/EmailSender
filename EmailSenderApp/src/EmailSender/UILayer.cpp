@@ -37,6 +37,7 @@ void UILayer::OnUpdate(float dt)
 	{
 	case UserInput::Type::AppCommand:
 		m_ScreenInfo.EmplaceBack(Line::Type::Client, input.GetInput());
+
 		if (cmd == "/quit")
 		{
 			Application::Get().Close();
@@ -56,6 +57,7 @@ void UILayer::OnUpdate(float dt)
 			m_ScreenInfo.EmplaceBack(Line::Type::App, "End collecting messages.");
 		}
 		return;
+
 	case UserInput::Type::ServerCommand:
 		if (cmd == "/send")
 		{
@@ -63,6 +65,7 @@ void UILayer::OnUpdate(float dt)
 			callsv = true;
 		}
 		break;
+
 	case UserInput::Type::Message:
 		Line::Type ty;
 		if (m_State == State::AppInteracting)

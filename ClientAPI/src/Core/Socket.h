@@ -27,7 +27,11 @@ public:
 	virtual void Send(const std::string& msg) = 0;
 	virtual std::string Receive() = 0;
 
+	virtual void SendFile(const std::string& path) = 0;
+	virtual void ReceiveFile(const std::string& dst_path) = 0;
+
 	static Ref<Socket> Create();
+
 protected:
 	int m_Af;
 	int m_Type;

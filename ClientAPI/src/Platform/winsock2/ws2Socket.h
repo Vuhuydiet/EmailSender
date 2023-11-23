@@ -17,6 +17,9 @@ public:
 	virtual void Send(const std::string& msg) override;
 	virtual std::string Receive() override;
 
+	virtual void SendFile(const std::string& path) override;
+	virtual void ReceiveFile(const std::string& dst_path) override;
+
 private:
 	SOCKET m_SocketDescriptor = INVALID_SOCKET;
 	bool m_IsConnected = false;
