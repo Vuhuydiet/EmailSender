@@ -18,6 +18,20 @@ void UILayer::OnUpdate(float dt)
 
 	std::string input;
 	std::getline(std::cin, input);
+
+	//get user input
+
+	//process input
+	if (input == "/quit") {
+	
+	}
+
+	//send message to sv
+
+	//receive message from sv
+
+	//process message
+
 	m_ScreenInfo.EmplaceBack(Line::Type::Client, input);
 
 	m_ScreenInfo.EmplaceBack(Line::Type::Server, "ok");
