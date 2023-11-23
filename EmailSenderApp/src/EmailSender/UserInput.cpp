@@ -2,7 +2,7 @@
 #include "app_pch.h"
 #include "UserInput.h"
 
-static const std::set<std::string> s_AppCommands = { "/quit", "/clr", "/start", "/end"};
+static const std::set<std::string> s_AppCommands = { "/quit", "/clr", "/begin", "/end"};
 static const std::set<std::string> s_ServerCommands = { "/send" };
 
 static bool IsAppCommand(const std::string& str) 

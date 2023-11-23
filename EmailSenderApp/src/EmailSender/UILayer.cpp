@@ -39,10 +39,10 @@ void UILayer::OnUpdate(float dt)
 		{
 			m_ScreenInfo.Clear();
 		}
-		else if (cmd == "/start")
+		else if (cmd == "/begin")
 		{
 			m_State = State::Sending;
-			m_ScreenInfo.EmplaceBack(Line::Type::App, "Start collecting messages:");
+			m_ScreenInfo.EmplaceBack(Line::Type::App, "Begin collecting messages:");
 		}
 		else if (cmd == "/end")
 		{
@@ -73,8 +73,7 @@ void UILayer::OnUpdate(float dt)
 	}
 
 	// Add user input to screen
-	//m_ScreenInfo.EmplaceBack(Line::Type::Client, input.GetInput());
-
+	// m_ScreenInfo.EmplaceBack(Line::Type::Client, input.GetInput());
 
 	// Send message to server if user input is server command
 
@@ -83,7 +82,7 @@ void UILayer::OnUpdate(float dt)
 	// Process server response
 
 	// Add Server response to screen
-	//m_ScreenInfo.EmplaceBack(Line::Type::Server, "ok");
+	// m_ScreenInfo.EmplaceBack(Line::Type::Server, "ok");
 }
 
 void UILayer::OnUIRender()

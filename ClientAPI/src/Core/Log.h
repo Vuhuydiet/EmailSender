@@ -14,30 +14,27 @@ public:
 	inline static std::shared_ptr<spdlog::logger>& GetCoreLogger() { return s_CoreLogger; }
 	inline static std::shared_ptr<spdlog::logger>& GetClientLogger() { return s_ClientLogger; }
 
-	static void Trace(std::shared_ptr<spdlog::logger>& logger, const std::string& msg) { logger->trace(msg + '\n'); }
-	static void Info(std::shared_ptr<spdlog::logger>& logger, const std::string& msg) { logger->info(msg + '\n'); }
-	static void Warn(std::shared_ptr<spdlog::logger>& logger, const std::string& msg) { logger->warn(msg + '\n'); }
-	static void Error(std::shared_ptr<spdlog::logger>& logger, const std::string& msg) { logger->error(msg + '\n'); }
-	static void Critical(std::shared_ptr<spdlog::logger>& logger, const std::string& msg) { logger->critical(msg + '\n'); }
-
 private:
 	static std::shared_ptr<spdlog::logger> s_CoreLogger;
 	static std::shared_ptr<spdlog::logger> s_ClientLogger;
 };
 
+inline static std::string Add_NL_Helper(const char* str) { return std::string(str) + '\n'; }
+inline static std::string Add_NL_Helper(const std::string& str) { return str + '\n'; }
+
 #if defined(_DEBUG)
 	#if defined(_LIB)
-		#define _TRACE(...)			::Log::Trace(::Log::GetCoreLogger(), __VA_ARGS__)
-		#define _INFO(...)			::Log::Info(::Log::GetCoreLogger(), __VA_ARGS__)
-		#define _WARN(...)			::Log::Warn(::Log::GetCoreLogger(), __VA_ARGS__)
-		#define _ERROR(...)			::Log::Error(::Log::GetCoreLogger(), __VA_ARGS__)
-		#define _CRITICAL(...)		::Log::Critical(::Log::GetCoreLogger(), __VA_ARGS__)
+		#define _TRACE(x, ...)			::Log::GetCoreLogger()->trace(Add_NL_Helper(x), __VA_ARGS__)
+		#define _INFO(x, ...)			::Log::GetCoreLogger()->info(Add_NL_Helper(x), __VA_ARGS__)
+		#define _WARN(x, ...)			::Log::GetCoreLogger()->warn(Add_NL_Helper(x), __VA_ARGS__)
+		#define _ERROR(x, ...)			::Log::GetCoreLogger()->error(Add_NL_Helper(x), __VA_ARGS__)
+		#define _CRITICAL(x, ...)		::Log::GetCoreLogger()->critical(Add_NL_Helper(x), __VA_ARGS__)
 	#elif defined(_APP)
-		#define _TRACE(...)			::Log::Trace(::Log::GetClientLogger(), __VA_ARGS__)
-		#define _INFO(...)			::Log::Info(::Log::GetClientLogger(), __VA_ARGS__)
-		#define _WARN(...)			::Log::Warn(::Log::GetClientLogger(), __VA_ARGS__)
-		#define _ERROR(...)			::Log::Error(::Log::GetClientLogger(), __VA_ARGS__)
-		#define _CRITICAL(...)		::Log::Critical(::Log::GetClientLogger(), __VA_ARGS__)
+		#define _TRACE(x, ...)			::Log::GetClientLogger()->trace(Add_NL_Helper(x), __VA_ARGS__)	
+		#define _INFO(x, ...)			::Log::GetClientLogger()->info(Add_NL_Helper(x), __VA_ARGS__)	
+		#define _WARN(x, ...)			::Log::GetClientLogger()->warn(Add_NL_Helper(x), __VA_ARGS__)	
+		#define _ERROR(x, ...)			::Log::GetClientLogger()->error(Add_NL_Helper(x), __VA_ARGS__)	
+		#define _CRITICAL(x, ...)		::Log::GetClientLogger()->critical(Add_NL_Helper(x), __VA_ARGS__)	
 	#endif
 #else
 	#if defined(_LIB)

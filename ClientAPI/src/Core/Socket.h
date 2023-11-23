@@ -17,6 +17,8 @@ struct SocketProps
 class Socket
 {
 public:
+	virtual ~Socket() = default;
+
 	virtual void Init(const SocketProps& props) = 0;
 
 	virtual void Connect(const std::string& ip, int port) = 0;
