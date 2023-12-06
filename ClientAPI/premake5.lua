@@ -14,7 +14,8 @@ project "ClientAPI"
 	{
 		"_LIB",
 
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	files
@@ -26,7 +27,8 @@ project "ClientAPI"
 	includedirs
 	{
 		"src",
-		"vendor/spdlog/include"
+		"vendor/spdlog/include",
+		"vendor/yaml-cpp/include"
 	}
 
 	libdirs
@@ -35,6 +37,7 @@ project "ClientAPI"
 
 	links
 	{
+		"yaml-cpp"
 	}
 
 	filter "system:windows"

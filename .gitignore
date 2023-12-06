@@ -12,3 +12,6 @@ bin-int/
 
 **.ini
 **.json
+
+# log files
+**.log

@@ -13,13 +13,14 @@ public:
 	Application();
 	virtual ~Application();
 
-	void PushLayer(Layer* layer);
-	void PushOverlay(Layer* overlay);
-
 	bool IsRunning() const { return m_Running; }
 	void Close() { m_Running = false; }
 
 	static Application& Get() { return *s_Instance; }
+
+protected:
+	void PushLayer(Layer* layer);
+	void PushOverlay(Layer* overlay);
 
 private:
 	void Run();

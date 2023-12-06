@@ -9,15 +9,15 @@ extern Application* CreateApplication();
 int main(int argc, char** argv)
 {
 	Log::Init();
-	_INFO("Initiated Log!");
+	__INFO("Initialised Log!");
 
 	Application* app = CreateApplication();
-	_INFO("Application Created!");
+	__INFO("Application Created Successfully!");
 
 	app->Run();
 
 	delete app;
-	_INFO("Close Application!");
+	__INFO("Close Application!\n");
 
 	return 0;
 }

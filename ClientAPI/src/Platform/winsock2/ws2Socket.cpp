@@ -6,14 +6,14 @@ void ws2Socket::Init(const SocketProps& props)
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
-		_ERROR("WSAStartup failed: {0}", iResult);
+		__ERROR("WSAStartup failed: {0}", iResult);
 		return;
 	}
 
 	m_SocketDescriptor = socket(props.af, props.type, props.protocol);
 
 	if (m_SocketDescriptor == INVALID_SOCKET) {
-		_ERROR("Socket failed with error: {0}", WSAGetLastError());
+		__ERROR("Socket failed with error: {0}", WSAGetLastError());
 		WSACleanup();
 		return;
 	}
@@ -27,7 +27,7 @@ void ws2Socket::Connect(const std::string& ip, int port)
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
-		_ERROR("WSAStartup failed: {0}", iResult);
+		__ERROR("WSAStartup failed: {0}", iResult);
 		return;
 	}
 
@@ -38,7 +38,7 @@ void ws2Socket::Connect(const std::string& ip, int port)
 	
 	iResult = connect(m_SocketDescriptor, (SOCKADDR*)&client_service, sizeof(client_service));
 	if (iResult == SOCKET_ERROR) {
-		_ERROR("Connect failed with error: {0}", WSAGetLastError());
+		__ERROR("Connect failed with error: {0}", WSAGetLastError());
 		closesocket(m_SocketDescriptor);
 		WSACleanup();
 		return;
@@ -63,37 +63,37 @@ void ws2Socket::Send(const std::string& msg)
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
-		_ERROR("WSAStartup failed: {0}", iResult);
+		__ERROR("WSAStartup failed: {0}", iResult);
 		return;
 	}
 
 	if (!m_IsConnected) {
-		_WARN("Hasn't connected, can not send message!");
+		__WARN("Hasn't connected, can not send message!");
 		return;
 	} 
-	iResult = send(m_SocketDescriptor, (msg+"\r\n").c_str(), (int)msg.size(), 0);
+	std::string formatted_msg = msg + "\r\n";
+	iResult = send(m_SocketDescriptor, formatted_msg.c_str(), (int)formatted_msg.size(), 0);
 	if (iResult == SOCKET_ERROR) {
-		_ERROR("Send failed : {0}", WSAGetLastError());
+		__ERROR("Send failed : {0}", WSAGetLastError());
 		closesocket(m_SocketDescriptor);
 		WSACleanup();
 	}
-	else {
-		_INFO("Bytes sent: {0}", iResult);
-		_INFO("Client: {0}", msg);
-	}
+	/*else {
+		__INFO("Bytes sent: {0}", iResult);
+		__INFO("Client: {0}", msg);
+	}*/
 }
 
-std::string ws2Socket::Receive()
-{
+std::string ws2Socket::Receive() {
 	WSADATA wsaData;
 	int iResult = WSAStartup(MAKEWORD(2, 2), &wsaData);
 	if (iResult != 0) {
-		_ERROR("WSAStartup failed: {0}", iResult);
+		__ERROR("WSAStartup failed: {0}", iResult);
 		return std::string();
 	}
 
 	if (!m_IsConnected) {
-		_WARN("Hasn't connected! Can not receive message!");
+		__WARN("Hasn't connected! Can not receive message!");
 		return std::string();
 	}
 	
@@ -103,14 +103,14 @@ std::string ws2Socket::Receive()
 	if (iResult > 0) {
 		buffer[iResult] = '\0';
 
-		_INFO("Bytes received: {0}", iResult);
-		_INFO("Server: {0}", buffer);
+		//__INFO("Bytes received: {0}", iResult);
+		//__INFO("Server: {0}", buffer);
 	}
 	else if (iResult == 0) {
-		_INFO("Connection closing...");
+		__INFO("Connection closing...");
 	}
 	else {
-		_ERROR("Recv failed: {0}", WSAGetLastError());
+		__ERROR("Recv failed: {0}", WSAGetLastError());
 		closesocket(m_SocketDescriptor);
 		WSACleanup();
 	}

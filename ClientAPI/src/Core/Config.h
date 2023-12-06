@@ -2,10 +2,10 @@
 
 #include "Log.h"
 
-#define ASSERT(flag, msg) {\
+#define ASSERT(flag, msg, ...) {\
 	if (!flag) {\
-		_CRITICAL("Assertion Failed!");\
-		_CRITICAL(msg);\
+		__CRITICAL("Assertion Failed!");\
+		__CRITICAL(msg, __VA_ARGS__);\
 		__debugbreak();\
 	}\
 }
