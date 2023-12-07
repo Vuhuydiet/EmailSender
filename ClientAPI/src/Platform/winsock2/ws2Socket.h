@@ -5,21 +5,27 @@
 #include <WinSock2.h>
 #pragma comment(lib, "ws2_32.lib")
 
-class ws2Socket : public Socket
+class WS2Socket : public Socket
 {
 public:
-	virtual void Init(const SocketProps& props) override;
+	WS2Socket(const SocketProps& props);
+	WS2Socket(int af, int type, int protocol);
 
 	virtual void Connect(const std::string& ip, int port) override;
 	virtual void Disconnect() override;
 
 	virtual void Send(const std::string& msg) override;
-	virtual std::string Receive() override;
+	virtual void Receive(std::string& buffer) override;
 
-	virtual void SendFile(const std::string& path) override;
-	virtual void ReceiveFile(const std::string& dst_path) override;
+	static void Init();
+
+private:
+	void CreateNewSocket();
 
 private:
 	SOCKET m_SocketDescriptor = INVALID_SOCKET;
 	bool m_IsConnected = false;
+	
+private:
+	static WSADATA s_WsaData;
 };

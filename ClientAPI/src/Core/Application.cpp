@@ -3,6 +3,8 @@
 
 #include "Renderer/TextPrinter.h"
 
+#include "Socket.h"
+
 Application* Application::s_Instance = nullptr;
 
 Application::Application()
@@ -13,6 +15,8 @@ Application::Application()
 	s_Instance = this;
 
 	TextPrinter::Init();
+
+	Socket::Init();
 }
 
 Application::~Application()

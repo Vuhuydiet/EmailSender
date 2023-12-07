@@ -12,12 +12,12 @@ void CommandLineUILayer::OnAttach()
 {
 	__INFO("Initialised UI!");
 
-	m_Socket = Socket::Create();
-	m_Socket->Init(SocketProps(AF_INET, SOCK_STREAM, IPPROTO_TCP));
+	m_Socket = Socket::Create({ AF_INET, SOCK_STREAM, IPPROTO_TCP });
 
 	// TEMP
 	m_Socket->Connect("127.0.0.1", 2500);
-	std::string serverResponse = m_Socket->Receive();
+	std::string serverResponse;
+	m_Socket->Receive(serverResponse);
 
 	m_ScreenInfo.EmplaceBack(Line::Type::Server, serverResponse);
 }
@@ -91,7 +91,8 @@ void CommandLineUILayer::OnUpdate(float dt)
 	m_InputBuffer.clear();
 
 	// Receive server response
-	std::string serverResponse = m_Socket->Receive();
+	std::string serverResponse;
+	m_Socket->Receive(serverResponse);
   
 	// Process server response
 

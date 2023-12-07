@@ -17,20 +17,18 @@ struct SocketProps
 class Socket
 {
 public:
+	Socket(const SocketProps& props);
+	Socket(int af, int type, int protocol);
 	virtual ~Socket() = default;
-
-	virtual void Init(const SocketProps& props) = 0;
 
 	virtual void Connect(const std::string& ip, int port) = 0;
 	virtual void Disconnect() = 0;
 
 	virtual void Send(const std::string& msg) = 0;
-	virtual std::string Receive() = 0;
+	virtual void Receive(std::string& buffer) = 0;
 
-	virtual void SendFile(const std::string& path) = 0;
-	virtual void ReceiveFile(const std::string& dst_path) = 0;
-
-	static Ref<Socket> Create();
+	static void Init();
+	static Ref<Socket> Create(const SocketProps& props);
 
 protected:
 	int m_Af;

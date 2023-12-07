@@ -1,10 +1,24 @@
 #include "pch.h"
 #include "Socket.h"
 
-#include "Platform/winsock2/ws2Socket.h"
+#include "Platform/WinSock2/WS2Socket.h"
 
-Ref<Socket> Socket::Create()
+Socket::Socket(const SocketProps& props)
+	: m_Af(props.af), m_Type(props.type), m_Protocol(props.protocol)
 {
-	Ref<Socket> socket = CreateRef<ws2Socket>();
-	return socket;
+}
+
+Socket::Socket(int af, int type, int protocol)
+	: m_Af(af), m_Type(type), m_Protocol(protocol)
+{
+}
+
+void Socket::Init()
+{
+	WS2Socket::Init();
+}
+
+Ref<Socket> Socket::Create(const SocketProps& props)
+{
+	return CreateRef<WS2Socket>(props);
 }
