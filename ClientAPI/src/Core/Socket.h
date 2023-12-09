@@ -26,7 +26,7 @@ public:
 	virtual bool IsConnected() const = 0;
 
 	virtual void Send(const std::string& msg) = 0;
-	virtual std::string Receive() = 0;
+	virtual std::string Receive(size_t bytes = 0) = 0;
 
 	static void Init();
 	static Ref<Socket> Create(const SocketProps& props);
