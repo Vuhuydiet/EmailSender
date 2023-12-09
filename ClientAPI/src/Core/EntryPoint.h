@@ -17,6 +17,7 @@ int main(int argc, char** argv)
 	app->Run();
 
 	delete app;
+	app = nullptr;
 	__INFO("Close Application!\n");
 
 	return 0;

@@ -23,9 +23,10 @@ public:
 
 	virtual void Connect(const std::string& ip, int port) = 0;
 	virtual void Disconnect() = 0;
+	virtual bool IsConnected() const = 0;
 
 	virtual void Send(const std::string& msg) = 0;
-	virtual void Receive(std::string& buffer) = 0;
+	virtual std::string Receive() = 0;
 
 	static void Init();
 	static Ref<Socket> Create(const SocketProps& props);
