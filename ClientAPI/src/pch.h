@@ -12,7 +12,6 @@
 #include <cmath>
 #include <typeinfo>
 #include <sstream>
-
 #include <array>
 #include <string>
 #include <vector>
