@@ -107,7 +107,7 @@ namespace SMTP {
 		
 
 		if (!mail.AttachedFilePaths.empty()) {
-			socket->Send("\n");
+			socket->Send("");
 			socket->Send("This is a multi-part message in MIME format.");
 			socket->Send("--" + boundary);
 		}
@@ -121,13 +121,13 @@ namespace SMTP {
 		for (const auto& line : mail.Content) {
 			socket->Send(line);
 		}
-		socket->Send("\n");
+		socket->Send("");
 
 		// Attached files
 		for (const auto& path : mail.AttachedFilePaths) {
 			socket->Send("--" + boundary);
 			SendFile(socket, path);
-			socket->Send("\n");
+			socket->Send("");
 		}
 
 		if (!mail.AttachedFilePaths.empty()) {	
