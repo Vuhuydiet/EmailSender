@@ -2,31 +2,21 @@
 
 #include <string>
 
+namespace std {
+	
+	string to_string(const std::string& arg) {
+		return arg;
+	}
+
+	string to_string(const char* arg) {
+		return arg;
+	}
+}
+
 namespace FMT {
 
 #define _RPC		"{}"
 #define _RPC_LEN	strlen(_RPC)
-
-	inline std::string format(const std::string& fmt, const std::string& arg) {
-		std::string res = fmt;
-		res.replace(res.find(_RPC), _RPC_LEN, arg);
-		return res;
-	}
-
-	inline std::string format(const std::string& fmt, const std::string& arg1, const std::string& arg2) {
-		std::string res = fmt;
-		res.replace(res.find(_RPC), _RPC_LEN, arg1);
-		res.replace(res.find(_RPC), _RPC_LEN, arg2);
-		return res;
-	}
-
-	inline std::string format(const std::string& fmt, const std::string& arg1, const std::string& arg2, const std::string& arg3) {
-		std::string res = fmt;
-		res.replace(res.find(_RPC), _RPC_LEN, arg1);
-		res.replace(res.find(_RPC), _RPC_LEN, arg2);
-		res.replace(res.find(_RPC), _RPC_LEN, arg2);
-		return res;
-	}
 
 	template <typename T>
 	inline std::string format(const std::string& fmt, const T& arg) {
