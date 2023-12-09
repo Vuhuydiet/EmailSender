@@ -32,7 +32,7 @@ std::string RetrievedMail::ToString() const {
 	return ss.str();
 }
 
-void RetrievedMail::SaveFile(const std::string& file_name, const std::filesystem::path& path) {
+void RetrievedMail::SaveFile(const std::string& file_name, const std::filesystem::path& path) const {
 	std::ofstream fo(path / file_name);
 
 	if (!fo.is_open()) {

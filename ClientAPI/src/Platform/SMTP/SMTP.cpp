@@ -1,6 +1,7 @@
 #include "pch.h"
 #include "SMTP.h"
 #include "Format.h"
+#include "Base64/Base64.h"
 
 namespace SMTP {
 	static std::string AddressListToString(const std::vector<std::string>& addr) {
@@ -17,28 +18,29 @@ namespace SMTP {
 		// Output the current time
 		std::string id = "<";
 		char delim = '-';
-		id += base64_encode("0" + std::to_string(date.day) + "th") + delim;
-		id += base64_encode(std::to_string(date.hour)) + delim;
-		id += base64_encode(std::to_string(date.min)) + delim;
-		id += base64_encode(std::to_string(date.sec)) + delim;
+		id += base64::Base64_Encode("0" + std::to_string(date.day) + "th") + delim;
+		id += base64::Base64_Encode(std::to_string(date.hour)) + delim;
+		id += base64::Base64_Encode(std::to_string(date.min)) + delim;
+		id += base64::Base64_Encode(std::to_string(date.sec)) + delim;
 		
 		// get user name from address mail
 		size_t atPos = sender.find('@');
 		if (atPos != std::string::npos) {
-			id += base64_encode(sender.substr(0, atPos));
+			id += base64::Base64_Encode(sender.substr(0, atPos));
 		}
 		else { // get all address mail
-			id += base64_encode(sender);
+			id += base64::Base64_Encode(sender);
 		}		
 		return id + "@gmail.com>";
 	}
 
-	static std::string CreateBoundary(const Date& date){
+	std::string CreateBoundary(const Date& date){
 		// Output the current time
-		std::string id;
-		id += base64_encode(std::to_string(date.hour));
-		id += base64_encode(std::to_string(date.min));
-		id += base64_encode(std::to_string(date.sec));
+		std::string id = "";
+		id = "------------";
+		id += base64::Base64_Encode(std::to_string(date.hour));
+		id += base64::Base64_Encode(std::to_string(date.min));
+		id += base64::Base64_Encode(std::to_string(date.sec));
 		return id;
 	}
 
@@ -53,10 +55,10 @@ namespace SMTP {
 		return DateMail;
 	}
 
-	void SendMail(Ref<Socket> socket, const SentMail& mail) {
+	bool SendMail(Ref<Socket> socket, const SentMail& mail) {
 		if (!socket->IsConnected()) {
 			__ERROR("Socket is not connected, can not send the email!");
-			return;
+			return false;
 		}
 
 		socket->Send("HELO <EmailSenderApp>");
@@ -95,10 +97,10 @@ namespace SMTP {
 		if (!mail.AttachedFilePaths.empty()) {
 			socket->Send("Content-Type: multipart/mixed;boundary=\"" + boundary + "\"");
 		}
-		socket->Send("Message ID: "+ Msg_ID);
+		socket->Send("Message-ID: "+ Msg_ID);
 		socket->Send("DATE: " + DateMail);
 		socket->Send("MIME-Version: 1.0");
-		socket->Send("User - Agent: C++ Client");
+		socket->Send("User-Agent: C++ Client");
 		socket->Send("Content-Langaue: en-US");
 		socket->Send(FMT::format("From: <{}>", mail.Sender));
 		socket->Send(FMT::format("To: {}", AddressListToString(mail.Tos)));
@@ -115,7 +117,7 @@ namespace SMTP {
 		// Header of content
 		socket->Send("Content-Type:text/plain;charest=UTF-8;format=flowed");
 		socket->Send("Content-Transfer-Encoding: 7bit");
-		socket->Send("\n");
+		socket->Send("");
 
 		// Content
 		for (const auto& line : mail.Content) {
@@ -137,10 +139,7 @@ namespace SMTP {
 		// End sending data
 		socket->Send(".");
 		socket->Receive();
-
-		// Quit
-		//socket->Send("QUIT");
-		//socket->Receive();
+		return true;
 	}
 
 }
