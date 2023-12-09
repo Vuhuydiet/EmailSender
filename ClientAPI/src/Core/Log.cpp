@@ -23,3 +23,7 @@ void Log::Init()
 	s_ClientLogger->set_pattern(pattern);
 	s_ClientLogger->set_level(spdlog::level::trace);
 }
+
+
+std::string Add_NL_Helper(const char* str) { return std::string(str) + '\n'; }
+std::string Add_NL_Helper(const std::string& str) { return str + '\n'; }

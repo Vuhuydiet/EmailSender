@@ -19,8 +19,8 @@ private:
 	static std::shared_ptr<spdlog::logger> s_ClientLogger;
 };
 
-inline static std::string Add_NL_Helper(const char* str) { return std::string(str) + '\n'; }
-inline static std::string Add_NL_Helper(const std::string& str) { return str + '\n'; }
+std::string Add_NL_Helper(const char* str);
+std::string Add_NL_Helper(const std::string& str);
 
 #if defined(_DEBUG)
 	#if defined(_LIB)
