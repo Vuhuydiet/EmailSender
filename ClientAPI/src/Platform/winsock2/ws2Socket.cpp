@@ -20,6 +20,11 @@ WS2Socket::WS2Socket(int af, int type, int protocol)
 	CreateNewSocket();
 }
 
+WS2Socket::~WS2Socket() {
+	if (m_SocketDescriptor != INVALID_SOCKET)
+		Disconnect();
+}
+
 void WS2Socket::CreateNewSocket()
 {
 	m_SocketDescriptor = socket(m_Af, m_Type, m_Protocol);
@@ -77,10 +82,10 @@ void WS2Socket::Send(const std::string& msg)
 	}*/
 }
 
-void WS2Socket::Receive(std::string& buffer) {
+std::string WS2Socket::Receive() {
 	if (!m_IsConnected) {
 		__WARN("Hasn't connected! Can not receive message!");
-		return;
+		return "##_receive_error";
 	}
 	
 	char* c_buffer = new char[100];
@@ -100,7 +105,8 @@ void WS2Socket::Receive(std::string& buffer) {
 		closesocket(m_SocketDescriptor);
 		WSACleanup();
 	}
-	buffer = c_buffer;
+	std::string buffer = c_buffer;
 	delete[] c_buffer;
+	return buffer;
 }
 
