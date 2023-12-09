@@ -10,6 +10,6 @@ public:
 	virtual void OnUpdate(float dt) override;
 	virtual void OnUIRender() override;
 private:
-	
+	Ref<Socket> m_Socket;
 
 };

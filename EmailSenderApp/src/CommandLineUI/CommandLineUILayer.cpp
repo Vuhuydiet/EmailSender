@@ -16,8 +16,7 @@ void CommandLineUILayer::OnAttach()
 
 	// TEMP
 	m_Socket->Connect("127.0.0.1", 2500);
-	std::string serverResponse;
-	m_Socket->Receive(serverResponse);
+	std::string serverResponse = m_Socket->Receive();
 
 	m_ScreenInfo.EmplaceBack(Line::Type::Server, serverResponse);
 }
@@ -91,8 +90,7 @@ void CommandLineUILayer::OnUpdate(float dt)
 	m_InputBuffer.clear();
 
 	// Receive server response
-	std::string serverResponse;
-	m_Socket->Receive(serverResponse);
+	std::string serverResponse = m_Socket->Receive();
   
 	// Process server response
 

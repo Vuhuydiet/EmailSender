@@ -3,7 +3,7 @@
 #include "Log.h"
 
 #define ASSERT(flag, msg, ...) {\
-	if (!flag) {\
+	if (!(flag)) {\
 		__CRITICAL("Assertion Failed!");\
 		__CRITICAL(msg, __VA_ARGS__);\
 		__debugbreak();\
