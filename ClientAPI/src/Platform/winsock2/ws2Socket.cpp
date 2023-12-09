@@ -1,5 +1,5 @@
 #include "pch.h"
-#include "ws2Socket.h"
+#include "WS2Socket.h"
 
 WSADATA WS2Socket::s_WsaData;
 
