@@ -1,10 +1,8 @@
 #include "pch.h"
 #include "SMTP.h"
-
 #include "Format.h"
 
 namespace SMTP {
-
 	static std::string AddressListToString(const std::vector<std::string>& addr) {
 		std::string res;
 		for (int i = 0; i < addr.size(); i++) {
@@ -14,34 +12,16 @@ namespace SMTP {
 		}
 		return res;
 	}
-	std::vector<int> CreateDate() {
-		// Get the current time point
-		std::time_t currentTime = std::time(nullptr);
 
-		std::tm* localTime = std::localtime(&currentTime);
-	
-		// Extract date and time components
-		std::vector<int> date;
-		
-		date.push_back(localTime->tm_mday);
-		date.push_back(localTime->tm_mon + 1);
-		date.push_back(localTime->tm_year + 1900);
-		date.push_back(localTime->tm_hour);
-		date.push_back(localTime->tm_min);
-		date.push_back(localTime->tm_sec);
-
-		return date;
-	}
-
-	std::string CreateMessageId(std::string sender) {
-		std::vector<int> currentDate = CreateDate();
+	static std::string CreateMessageId(const std::string& sender, const Date& date) {
 		// Output the current time
-		std::string id ="<";
+		std::string id = "<";
 		char delim = '-';
-		id += base64_encode("0" + std::to_string(currentDate[2]) + "th") + delim;
-		for (int i = 3; i < currentDate.size(); i++) {
-			id += base64_encode(std::to_string(currentDate[i])) + delim;
-		}
+		id += base64_encode("0" + std::to_string(date.day) + "th") + delim;
+		id += base64_encode(std::to_string(date.hour)) + delim;
+		id += base64_encode(std::to_string(date.min)) + delim;
+		id += base64_encode(std::to_string(date.sec)) + delim;
+		
 		// get user name from address mail
 		size_t atPos = sender.find('@');
 		if (atPos != std::string::npos) {
@@ -50,32 +30,26 @@ namespace SMTP {
 		else { // get all address mail
 			id += base64_encode(sender);
 		}		
-		return id+"@gmail.com>";
+		return id + "@gmail.com>";
 	}
 
-	std::string CreateBoundary(){
-		// Output the current time
-
-		std::vector<int> currentDate = CreateDate();
+	static std::string CreateBoundary(const Date& date){
 		// Output the current time
 		std::string id;
-		for (int i = 3; i < currentDate.size(); i++) {
-			id += base64_encode(std::to_string(currentDate[i]));
-		}
+		id += base64_encode(std::to_string(date.hour));
+		id += base64_encode(std::to_string(date.min));
+		id += base64_encode(std::to_string(date.sec));
 		return id;
 	}
 
-	std::string CreateDateMail() {
-		std::vector<int> DateMailInit = CreateDate();
+	static std::string CreateDateMail(const Date& date) {
 		std::string DateMail;
-		for (int i = 0; i < DateMailInit.size(); i++) {
-			if (i < 3) {
-				DateMail += std::to_string(DateMailInit[i]) + "/";
-				if (i == 2) DateMail += " ";
-			}
-			else DateMail += std::to_string(DateMailInit[i]) + ":";
-
-		}
+		DateMail += std::to_string(date.day) + "/";
+		DateMail += std::to_string(date.month) + "/";
+		DateMail += std::to_string(date.year) + "  ";
+		DateMail += std::to_string(date.hour) + ":";
+		DateMail += std::to_string(date.min) + ":";
+		DateMail += std::to_string(date.sec);
 		return DateMail;
 	}
 
@@ -112,9 +86,10 @@ namespace SMTP {
 
 		// Header
 		// Initialize
-		const std::string boundary = CreateBoundary();
-		std::string Msg_ID = CreateMessageId(mail.Sender);
-		std::string DateMail = CreateDateMail();
+		Date date;
+		const std::string boundary = CreateBoundary(date);
+		std::string Msg_ID = CreateMessageId(mail.Sender,date);
+		std::string DateMail = CreateDateMail(date);
 
 		// Send Header
 		if (!mail.AttachedFilePaths.empty()) {
@@ -148,14 +123,15 @@ namespace SMTP {
 		}
 		socket->Send("\n");
 
-		// Attach file
-		if (!mail.AttachedFilePaths.empty()) {
-			for (int i = 0; i < mail.AttachedFilePaths.size(); i++) {
-				socket->Send("--" + boundary);
-				SendFile(socket, mail.AttachedFilePaths[i]);
-				socket->Send("\n");
-			}
+		// Attached files
+		for (const auto& path : mail.AttachedFilePaths) {
 			socket->Send("--" + boundary);
+			SendFile(socket, path);
+			socket->Send("\n");
+		}
+
+		if (!mail.AttachedFilePaths.empty()) {	
+			socket->Send("--" + boundary +"--");
 		}
 
 		// End sending data
