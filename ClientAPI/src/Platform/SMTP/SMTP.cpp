@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "SMTP.h"
-#include "Format.h"
+#include "Core/Format.h"
 #include "Base64/Base64.h"
 
 namespace SMTP {

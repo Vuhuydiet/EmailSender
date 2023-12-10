@@ -1,35 +1,40 @@
 #include "pch.h"
 #include "RetrievedMail.h"
 #include "Base64/Base64.h"
+#include "Core/Format.h"
 
 std::string RetrievedMail::ToString() const {
-	std::stringstream ss;
+	std::string res;
 
-	ss << "From: " << this->Sender << "\n\n";
+	res +=  FMT::format("From: {}\n", this->Sender);
 	
-	ss << "To: ";
-	for (auto to : this->Tos) {
-		ss << to;
+	res += "To: ";
+	for (const auto& to : this->Tos) {
+		res += to + ", ";
 	}
-	ss << "\n\n";
-
-	ss << "Cc: ";
+	res.pop_back();
+	res.pop_back();
+	res += "\n";
+	
+	res += "Cc: ";
 	for (auto cc : this->Ccs) {
-		ss << cc;
+		res += cc + ", ";
 	}
-	ss << "\n\n";
+	res.pop_back();
+	res.pop_back();
+	res += "\n";
 
-	ss << "Subject: " << this->Subject << "\n\n";
+	res += FMT::format("Subject: {}\n",this->Subject);
 
-	ss << "Content: \n\n" << this->Content << "\n\n";
+	res += FMT::format("Content:\n {}\n", this->Content);
 
-	ss << "Attached-File-Amount: " << this->AttachedFiles.size() << "\n\n";
+	res += FMT::format("Attached-File-Amount: {}\n", this->AttachedFiles.size());
 
 	for (int i = 0; i < this->AttachedFiles.size(); i++) {
-		ss << i + 1 << " File-Name: " << this->AttachedFiles[i].FileName << "\n\n";
+		res += FMT::format("{}. {}\n", i + 1, this->AttachedFiles[i].FileName);
 	}
 
-	return ss.str();
+	return res;
 }
 
 void RetrievedMail::SaveFile(const std::string& file_name, const std::filesystem::path& path) const {
