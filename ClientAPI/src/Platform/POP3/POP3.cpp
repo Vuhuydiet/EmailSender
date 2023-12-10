@@ -1,6 +1,6 @@
 #include "pch.h"
 #include "POP3.h"
-#include "Platform/SMTP/Format.h"
+#include "Core/Format.h"
 
 
 namespace POP3 {
@@ -149,7 +149,7 @@ namespace POP3 {
             std::ofstream mail_file(mailbox_folder_path / id);
             
             mail_receiver->Send(FMT::format("RETR {}",i));
-            std::string buffer = mail_receiver->Receive(sizeOfMails[i - 1]);
+            std::string buffer = mail_receiver->Receive(".\r\n");
 
             PreprocessRawMail(buffer);
             mail_file.write(buffer.c_str(), buffer.length());
