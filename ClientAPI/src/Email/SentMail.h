@@ -5,6 +5,7 @@
 #include <filesystem>
 
 struct SentMail {
+public:
 	void AddTo(const std::string& to);
 	void AddCc(const std::string& cc);
 	void AddBcc(const std::string& bcc);
