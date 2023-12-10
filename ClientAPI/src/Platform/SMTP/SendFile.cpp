@@ -50,7 +50,7 @@ namespace SMTP {
         std::string content_type = "Content-Type: application/octet-stream; charset=UTF-8; name=" + file_name;
         std::string content_dispostion = "Content-Disposition: attachment; filename=" + file_name;
         std::string content_trafer = "Content-Transfer-Encoding: base64";
-        std::string space = "\n";
+        std::string space = "";
 
         socket->Send(content_type);
         socket->Send(content_dispostion);
