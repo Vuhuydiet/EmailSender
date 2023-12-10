@@ -124,7 +124,7 @@ void UILayer::ListMail() {
 	m_Socket = Socket::Create({ AF_INET, SOCK_STREAM, IPPROTO_TCP });
 	m_Socket->Connect("127.0.0.1", 1100);
 	m_Socket->Receive();
-	TextPrinter::Print("Login to server\n");
+	TextPrinter::Print("Login to server\n", TextColor::Green);
 	TextPrinter::Print("Email: ");
 	std::cin.ignore();
 	std::string email;
@@ -136,20 +136,19 @@ void UILayer::ListMail() {
 
 	char chosen_folder_order = 0;
 	do {
-		TextPrinter::Print("This is list of folder in your mailbox: \n", TextColor::RedWhite);
-		TextPrinter::Print("1. Inbox\n", TextColor::RedWhite);
-		TextPrinter::Print("2. Project\n", TextColor::RedWhite);
-		TextPrinter::Print("3. Important\n", TextColor::RedWhite);
-		TextPrinter::Print("4. Work\n", TextColor::RedWhite);
-		TextPrinter::Print("5. Spam\n", TextColor::RedWhite);
-		TextPrinter::Print("Choose folder: ", TextColor::RedWhite);
+		TextPrinter::Print("This is list of folder in your mailbox: \n", TextColor::Green);
+		TextPrinter::Print("1. Inbox\n", TextColor::Yellow);
+		TextPrinter::Print("2. Project\n", TextColor::Yellow);
+		TextPrinter::Print("3. Important\n", TextColor::Yellow);
+		TextPrinter::Print("4. Work\n", TextColor::Yellow);
+		TextPrinter::Print("5. Spam\n", TextColor::Yellow);
+		TextPrinter::Print("Choose folder: ");
 		std::cin >> chosen_folder_order;
 		if (chosen_folder_order < '1' || chosen_folder_order > '5') {
 			TextPrinter::Print("Wrong Syntax! Please input again!\n", TextColor::Red);
 		}
 	} while (chosen_folder_order < '1' || chosen_folder_order > '5');
 
-	bool stop_case_2 = false;
 	std::string chosen_folder;
 	switch (chosen_folder_order) {
 	case '1':
@@ -174,6 +173,7 @@ void UILayer::ListMail() {
 	// TEMP
 	// using temporary path
 	POP3::RetreiveMailSFromServer(m_Socket, mailContainer, "MSG");
+	std::cin.ignore();
 
 	do {
 		// TEMP
@@ -182,23 +182,23 @@ void UILayer::ListMail() {
 
 		for (int i = 0; i < mailContainer.GetRetrievedMails().size(); i++) {
 			TextPrinter::Print(std::to_string(i + 1) + " <" + mailContainer.GetRetrievedMails()[i].Sender + "> <" +
-				mailContainer.GetRetrievedMails()[i].Subject + ">\n", TextColor::Green);
+				mailContainer.GetRetrievedMails()[i].Subject + ">\n", TextColor::Yellow);
 		}
 
-		int mail_order = -1;
-		TextPrinter::Print("\nWhich mail you want to read", TextColor::Green);
-		TextPrinter::Print("(Or press ENTER to exit, or press 0 to see list email again): ", TextColor::Green);
-		std::cin >> mail_order;
-		if (mail_order == 0)
+		std::string mail_order;
+		TextPrinter::Print("\nWhich mail you want to read");
+		TextPrinter::Print("(Or press ENTER to exit, or press 0 to see list email again): ");
+		std::getline(std::cin, mail_order);
+		if (mail_order == "0")
 			continue;
-		else if (mail_order == -1) {
-			stop_case_2 = true;
+		else if (mail_order.empty()) {
+			break;
 		}
 		else {
-			TextPrinter::Print("Content of " + std::to_string(mail_order) + ": \n", TextColor::Green);
-			TextPrinter::Print(mailContainer.GetRetrievedMails()[mail_order - 1].Content + "\n", TextColor::Green);
+			TextPrinter::Print("Content of " + mail_order + ": \n", TextColor::Green);
+			TextPrinter::Print(mailContainer.GetRetrievedMails()[stoi(mail_order) - 1].ToString() + "\n", TextColor::Yellow);
 
-			if (mailContainer.GetRetrievedMails()[mail_order - 1].AttachedFiles.size() != 0) {
+			if (mailContainer.GetRetrievedMails()[stoi(mail_order) - 1].AttachedFiles.size() != 0) {
 				char save_file;
 				TextPrinter::Print("This mail has attached files, do you want to save? (1:YES, 2:NO): ");
 				std::cin >> save_file;
@@ -208,15 +208,15 @@ void UILayer::ListMail() {
 					std::cin.ignore();
 					std::getline(std::cin, SavingPath);
 
-					for (int i = 0; i < mailContainer.GetRetrievedMails()[mail_order - 1].AttachedFiles.size(); i++) {
-						std::string file_name = mailContainer.GetRetrievedMails()[mail_order - 1].AttachedFiles[i].FileName;
-						mailContainer.GetRetrievedMails()[mail_order - 1].SaveFile(file_name, SavingPath);
+					for (int i = 0; i < mailContainer.GetRetrievedMails()[stoi(mail_order) - 1].AttachedFiles.size(); i++) {
+						std::string file_name = mailContainer.GetRetrievedMails()[stoi(mail_order) - 1].AttachedFiles[i].FileName;
+						mailContainer.GetRetrievedMails()[stoi(mail_order) - 1].SaveFile(file_name, SavingPath);
 					}
 
 				}
 			}
 		}
-	} while (!stop_case_2);
+	} while (true);
 }
 
 void UILayer::OnUpdate(float dt)
@@ -227,10 +227,10 @@ void UILayer::OnUpdate(float dt)
 	
 
 
-	TextPrinter::Print("Please choose Menu: \n", TextColor::RedWhite);
-	TextPrinter::Print("1. Send Mail\n", TextColor::RedWhite);
-	TextPrinter::Print("2. List Received Email\n", TextColor::RedWhite);
-	TextPrinter::Print("3. Exit\n", TextColor::RedWhite);
+	TextPrinter::Print("Please choose Menu: \n", TextColor::Blue);
+	TextPrinter::Print("1. Send Mail\n", TextColor::Blue);
+	TextPrinter::Print("2. List Received Email\n", TextColor::Blue);
+	TextPrinter::Print("3. Exit\n", TextColor::Blue);
 
 
 	char choice = 0;

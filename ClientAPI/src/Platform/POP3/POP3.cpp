@@ -44,17 +44,21 @@ namespace POP3 {
         std::getline(ss, line);
 
         std::string boundaryString = "boundary=\"";
+        int boundary_pos = line.find(boundaryString);
+        if (boundary_pos != std::string::npos) {
+            std::string boundary = line.substr(boundary_pos + boundaryString.size());
+            boundary.pop_back();
+            return boundary;
+        }
 
-        std::string boundary = line.substr(line.find(boundaryString) + boundaryString.size());
-        boundary.pop_back();
-
-        return boundary;
+        return "";
     }
 
     static void SaveInfo(RetrievedMail& retreived_mail, const std::string& buffer) {
         std::stringstream ss(buffer);
 
         std::string boundary = FindBoundary(buffer);
+        if (boundary.empty()) boundary = ".";
         std::string content = "";
         std::string line;
         while (!ss.eof()) {
