@@ -7,7 +7,7 @@ static const int MAX_FILE_SIZE = 3*_mB; // size of file limit by 3MB
 
 namespace SMTP {
     std::streampos getFileSize(const std::filesystem::path& filePath) {
-        if (std::filesystem::exists(filePath)) {
+        if (!std::filesystem::exists(filePath)) {
             __ERROR("Failed to open the file");
             return -1;
         }
