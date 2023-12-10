@@ -16,79 +16,7 @@ namespace POP3 {
         buffer = mail_receiver->Receive();
     }
 
-    static int CountMailAmount(Ref<Socket>mail_receiver) {
-        int mail_amount = 0;
-        int bytes = 0;
-        mail_receiver->Send("LIST");
-        std::string buffer = mail_receiver->Receive();
-
-        std::stringstream ss(buffer);
-        std::string ignored_line;
-        ss >> ignored_line;
-        while (!ss.eof()) {
-            ss >> mail_amount;
-            ss >> bytes;
-            while (!isdigit(ss.peek())) {
-                ss.get();
-                if (ss.tellg() == -1) break;
-            }
-        }
-
-        return mail_amount;
-    }
-
-    //***************************************************************************
-    // Not used functions
-
-    // File interacting functions
-
-    // Helpers
-
-
-    // Decode and save decoded file
-    //static bool SaveDecodedFile(const std::string& encoded_string, const std::string& outputFilename) {
-    //    std::string decoded_string = Base64_Decode(encoded_string);
-
-    //    // Write the decoded data to a file
-    //    std::ofstream outputFile(outputFilename, std::ios::out | std::ios::binary);
-    //    if (outputFile.is_open()) {
-    //        outputFile.write(decoded_string.c_str(), decoded_string.length());
-    //        outputFile.close();
-    //        return true;
-    //    }
-    //    else {
-    //        __ERROR("Error opening file for writing!\n");
-    //    }
-    //    return false;
-    //}
-
-    // Convert std::string to LPCWSTR (createDirectory has LPCWSTR pathin as argument)
-    //static LPCWSTR StringToLPCWSTR(const std::string& str) {
-    //    int size = MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, NULL, 0);
-    //    if (size == 0) {
-    //        // Handle error
-    //        __ERROR("Error in MultiByteToWideChar: ", GetLastError(), "\n");
-    //        return nullptr;
-    //    }
-
-    //    // Allocate buffer
-    //    wchar_t* buffer = new wchar_t[size];
-
-    //    // Convert the string
-    //    if (MultiByteToWideChar(CP_UTF8, 0, str.c_str(), -1, buffer, size) == 0) {
-    //        // Handle error
-    //        __ERROR("Error in MultiByteToWideChar: ", GetLastError(), "\n");
-    //        delete[] buffer;
-    //        return nullptr;
-    //    }
-
-    //    return buffer;
-    //}
-
-    //***************************************************************************
-
     // Find boundary in received mail
-
     static std::vector<std::string> FindMailIDs(Ref<Socket> mail_receiver, int mail_amount) {
         mail_receiver->Send("UIDL");
         std::string buffer = mail_receiver->Receive();
@@ -119,10 +47,8 @@ namespace POP3 {
 
         std::string buffer;
 
-        char delim = '\r';
-
-        std::getline(fi, buffer, delim);
-        std::getline(fi, buffer, delim);
+        std::getline(fi, buffer);
+        std::getline(fi, buffer);
 
         std::string boundaryString = "boundary=\"";
 
@@ -132,20 +58,9 @@ namespace POP3 {
         return boundary;
     }
 
-    static void SaveInfo(RetrievedMail& retreived_mail, const std::filesystem::path& path) {
-        std::ifstream fi(path);
+    static void SaveInfo(RetrievedMail& retreived_mail, const std::string& buffer) {
+        std::stringstream ss(buffer);
 
-        if (!fi.is_open()) {
-            __ERROR("Can't open {}\n", path);
-            return;
-        }
-
-        if (!fi.is_open()) {
-            __ERROR("Can't open {0}\n", path);
-            return;
-        }
-
-        std::string buffer;
         std::string boundary = FindBoundary(fi);
         std::string content = "";
         char delim = '\n';
@@ -218,37 +133,50 @@ namespace POP3 {
     static void PreprocessRawMail(std::string& buffer) {
         buffer.erase(std::remove_if(buffer.begin(), buffer.end(), &IsR), buffer.end());
         buffer.erase(buffer.begin(), buffer.begin() + buffer.find_first_of('\n') + 1);
+        buffer.pop_back();
+    }
+
+    std::vector<size_t> GetSizeOfMails(Ref<Socket> socket) {
+        std::vector<size_t> res;
+
+        std::vector<size_t> sizeOfMails;
+        socket->Send("LIST");
+        
+        std::stringstream ss(socket->Receive());
+        std::string ignored_line;
+        std::getline(ss, ignored_line);
+        std::string line;
+        while (std::getline(ss, line)) {
+            line.pop_back();
+            if (line == ".")
+                break;
+            std::stringstream ls(line);
+            int sz = 0;
+            ls >> sz >> sz;
+            sizeOfMails.push_back(sz);
+        }
+        return res;
     }
 
     void RetreiveMailSFromServer(Ref<Socket>mail_receiver, Library& mail_container, const std::filesystem::path& mailbox_folder_path) {
-        std::string buffer;
-        std::string ignored_line;
-        int mail_amount = CountMailAmount(mail_receiver);
-
-        std::vector<size_t> sizeOfMails(mail_amount, 0);
+        std::vector<size_t> sizeOfMails = GetSizeOfMails(mail_receiver);
+        int mail_amount = sizeOfMails.size();
         std::vector<std::string> mail_ids = FindMailIDs(mail_receiver, mail_amount);
-        mail_receiver->Send("LIST");
-        buffer = mail_receiver->Receive();
 
-        int size_line;
-        std::stringstream ss(buffer);
-        getline(ss, ignored_line);
-        for (int i = 0; i < mail_amount; i++) {
-            ss >> size_line;
-            ss >> sizeOfMails[i];
-        }
 
         for (int i = 1; i <= mail_amount; i++) {
             std::string id = mail_ids[i-1];
             std::ofstream mail_file(mailbox_folder_path / id);
+            
             mail_receiver->Send(FMT::format("RETR {}",i));
-            buffer = mail_receiver->Receive(sizeOfMails[i - 1]);
-            mail_file.write(buffer.c_str(), buffer.length());
+            std::string buffer = mail_receiver->Receive(sizeOfMails[i - 1]);
 
+            PreprocessRawMail(buffer);
+            mail_file.write(buffer.c_str(), buffer.length());
             mail_file.close();
 
             RetrievedMail retreived_mail;
-            SaveInfo(retreived_mail, mailbox_folder_path / id);
+            SaveInfo(retreived_mail, buffer);
             mail_container.AddNewMail(retreived_mail);
         }
     }

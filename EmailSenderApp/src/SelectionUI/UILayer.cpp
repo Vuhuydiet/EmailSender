@@ -176,7 +176,7 @@ void UILayer::OnUpdate(float dt)
 
 			// TEMP
 			// using temporary path
-			POP3::RetreiveMailSFromServer(m_Socket, mailContainer, "C:/DEV");
+			POP3::RetreiveMailSFromServer(m_Socket, mailContainer, "MSG");
 
 			do {
 				// TEMP
