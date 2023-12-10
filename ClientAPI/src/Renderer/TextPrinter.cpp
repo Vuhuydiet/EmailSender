@@ -13,27 +13,3 @@ void TextPrinter::Init()
 	s_Printer->set_pattern("%^%v%$");
 }
 
-void TextPrinter::Print(const std::string& text, TextColor col) 
-{
-	switch (col)
-	{
-	case TextColor::White:
-		s_Printer->trace(text);
-		break;
-	case TextColor::Blue:
-		s_Printer->debug(text);
-		break;
-	case TextColor::Green:
-		s_Printer->info(text);
-		break;
-	case TextColor::Yellow:
-		s_Printer->warn(text);
-		break;
-	case TextColor::Red:
-		s_Printer->error(text);
-		break;
-	case TextColor::RedWhite:
-		s_Printer->critical(text);
-		break;
-	}
-}
