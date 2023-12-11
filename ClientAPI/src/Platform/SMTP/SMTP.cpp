@@ -102,8 +102,8 @@ namespace SMTP {
 		socket->Send("MIME-Version: 1.0");
 		socket->Send("User-Agent: C++ Client");
 		socket->Send("Content-Langaue: en-US");
-		socket->Send(FMT::format("From: <{}>", mail.Sender));
 		socket->Send(FMT::format("To: {}", AddressListToString(mail.Tos)));
+		socket->Send(FMT::format("From: <{}>", mail.Sender));
 		socket->Send(FMT::format("Cc: {}", AddressListToString(mail.Ccs)));
 		socket->Send(FMT::format("Subject: {}", mail.Subject));
 		
