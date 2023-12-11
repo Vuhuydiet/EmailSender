@@ -113,11 +113,7 @@ namespace POP3 {
         
 
         if (!fi.is_open()) {
-<<<<<<< HEAD
             __ERROR("Can't open file\n");
-=======
-            __ERROR("Can't open {0}\n", path);
->>>>>>> 257bce42279f643378945becc903c21ff24eb1fd
             return "";
         }
 
@@ -136,22 +132,16 @@ namespace POP3 {
         return boundary;
     }
 
-<<<<<<< HEAD
     static void SaveInfo(RetrievedMail& retreived_mail, const std::filesystem::path& path) {
         std::ifstream fi(path);
 
         if (!fi.is_open()) {
             __ERROR("Can't open {}\n", path);
-=======
-
-
-    static void FindInfo(RetrievedMail& retreived_mail, const std::filesystem::path& path) {
-        std::filesystem::path temporary_saving_mail_content_file = ".//temporary_saving_mail_content.txt";
-        std::ifstream fi(temporary_saving_mail_content_file, std::ios::binary | std::ios::trunc);
+            return;
+        }
 
         if (!fi.is_open()) {
             __ERROR("Can't open {0}\n", path);
->>>>>>> 257bce42279f643378945becc903c21ff24eb1fd
             return;
         }
 
