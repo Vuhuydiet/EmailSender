@@ -37,22 +37,15 @@ namespace POP3 {
         return mail_ids;
     }
 
-    static std::string FindBoundary(std::ifstream& fi) {
-        
+    static std::string FindBoundary(const std::string& buffer) {
 
-        if (!fi.is_open()) {
-            __ERROR("Can't open file\n");
-            return "";
-        }
-
-        std::string buffer;
-
-        std::getline(fi, buffer);
-        std::getline(fi, buffer);
+        std::stringstream ss(buffer);
+        std::string line;
+        std::getline(ss, line);
 
         std::string boundaryString = "boundary=\"";
 
-        std::string boundary = buffer.substr(buffer.find(boundaryString) + boundaryString.size());
+        std::string boundary = line.substr(line.find(boundaryString) + boundaryString.size());
         boundary.pop_back();
 
         return boundary;
@@ -61,70 +54,62 @@ namespace POP3 {
     static void SaveInfo(RetrievedMail& retreived_mail, const std::string& buffer) {
         std::stringstream ss(buffer);
 
-        std::string boundary = FindBoundary(fi);
+        std::string boundary = FindBoundary(buffer);
         std::string content = "";
-        char delim = '\n';
-        while (!fi.eof()) {
-            std::getline(fi, buffer, delim);
-            if (buffer.find("From: ") != std::string::npos) {
-                buffer.pop_back();
-                retreived_mail.Sender = buffer.substr(buffer.find(" ") + 1, buffer.length());
+        std::string line;
+        while (!ss.eof()) {
+            std::getline(ss, line);
+            if (line.find("From: ") != std::string::npos) {
+                retreived_mail.Sender = line.substr(line.find(" ") + 1);
             }
 
-            if (buffer.find("To: ") != std::string::npos) {
-                buffer = buffer.substr(buffer.find(" ") + 1, buffer.length());
-                while (!buffer.empty()) {
-                    buffer.pop_back();
-                    retreived_mail.Tos.push_back(buffer.substr(0, buffer.find(" ")));
-                    buffer.erase(0, retreived_mail.Tos.back().size());
+            if (line.find("To: ") != std::string::npos) {
+                line = line.substr(line.find(" ") + 1);
+                while (!line.empty()) {
+                    retreived_mail.Tos.push_back(line.substr(0, line.find(" ")));
+                    line.erase(0, retreived_mail.Tos.back().size());
                 }
             }
 
-            if (buffer.find("Cc: ") != std::string::npos) {
-                buffer = buffer.substr(buffer.find(" ") + 1);
-                while (!buffer.empty()) {
-                    buffer.pop_back();
-                    retreived_mail.Ccs.push_back(buffer.substr(0, buffer.find(" ")));
-                    buffer.erase(0, retreived_mail.Ccs.back().size());
+            if (line.find("Cc: ") != std::string::npos) {
+                line = line.substr(line.find(" ") + 1);
+                while (!line.empty()) {
+                    retreived_mail.Ccs.push_back(line.substr(0, line.find(" ")));
+                    line.erase(0, retreived_mail.Ccs.back().size());
                 }
             }
 
-            if (buffer.find("Subject: ") != std::string::npos) {
-                buffer.pop_back();
-                retreived_mail.Subject = buffer.substr(buffer.find(" ") + 1);
+            if (line.find("Subject: ") != std::string::npos) {
+                retreived_mail.Subject = line.substr(line.find(" ") + 1);
             }
 
-            if (buffer.find("Content-Transfer-Encoding") != std::string::npos) {
-                std::getline(fi, buffer, delim);
-                std::getline(fi, buffer, delim);
+            if (line.find("Content-Transfer-Encoding") != std::string::npos) {
+                std::getline(ss, line);
+                std::getline(ss, line);
                 do {
-                    buffer.pop_back();
-                    content += buffer;
-                    std::getline(fi, buffer, delim);
-                } while (buffer.find(boundary) == std::string::npos);
+                    content += line;
+                    std::getline(ss, line);
+                } while (line.find(boundary) == std::string::npos);
                 retreived_mail.Content = content;
             }
 
-            if (buffer.find("filename") != std::string::npos) {
+            if (line.find("filename") != std::string::npos) {
                 content = "";
                 FileInfo file_info;
-                file_info.FileName = buffer.substr(buffer.find("\"") + 1);
+                file_info.FileName = line.substr(line.find("\"") + 1);
                 file_info.FileName.pop_back();
-                file_info.FileName.pop_back();
-                std::getline(fi, buffer, delim);
-                std::getline(fi, buffer, delim);
+                std::getline(ss, line);
+                std::getline(ss, line);
+                std::getline(ss, line);
                 do {
-                    std::getline(fi, buffer, delim);
-                    if (buffer == "\r") break;
-                    buffer.pop_back();
-                    content += buffer;
-                } while (1);
+                    content += line;
+                    std::getline(ss, line);
+                } while (line.find(boundary) == std::string::npos);
                 file_info.Base64_Encoded_Content = content;
                 retreived_mail.AttachedFiles.push_back(file_info);
             }
         }
 
-        fi.close();
     }
     static bool IsR(char c)
     {
@@ -136,12 +121,9 @@ namespace POP3 {
         buffer.pop_back();
     }
 
-    std::vector<size_t> GetSizeOfMails(Ref<Socket> socket) {
-        std::vector<size_t> res;
-
+    static std::vector<size_t> GetSizeOfMails(Ref<Socket> socket) {
         std::vector<size_t> sizeOfMails;
         socket->Send("LIST");
-        
         std::stringstream ss(socket->Receive());
         std::string ignored_line;
         std::getline(ss, ignored_line);
@@ -155,15 +137,13 @@ namespace POP3 {
             ls >> sz >> sz;
             sizeOfMails.push_back(sz);
         }
-        return res;
+        return sizeOfMails;
     }
 
     void RetreiveMailSFromServer(Ref<Socket>mail_receiver, Library& mail_container, const std::filesystem::path& mailbox_folder_path) {
         std::vector<size_t> sizeOfMails = GetSizeOfMails(mail_receiver);
         int mail_amount = sizeOfMails.size();
         std::vector<std::string> mail_ids = FindMailIDs(mail_receiver, mail_amount);
-
-
         for (int i = 1; i <= mail_amount; i++) {
             std::string id = mail_ids[i-1];
             std::ofstream mail_file(mailbox_folder_path / id);
