@@ -17,8 +17,9 @@ public:
 	virtual bool IsConnected() const override { return m_IsConnected; }
 
 	virtual void Send(const std::string& msg) override;
-	virtual std::string Receive(size_t bytes = 0) override;
-
+	virtual std::string Receive(size_t bytes) override;
+	virtual std::string Receive() override;
+	virtual std::string Receive(const std::string& back_string) override;
 	static void Init();
 
 private:

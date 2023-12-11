@@ -82,18 +82,53 @@ void WS2Socket::Send(const std::string& msg)
 	}*/
 }
 
+std::string WS2Socket::Receive() {
+
+	if (!m_IsConnected) {
+		__WARN("Hasn't connected! Can not receive message!");
+		return "##_receive_error";
+	}
+
+	const size_t MAX_RECEIVED_BYTES = 3'000'000;
+	char* c_buffer = new char[MAX_RECEIVED_BYTES+1];
+			
+	int iResult = recv(m_SocketDescriptor, c_buffer, MAX_RECEIVED_BYTES, 0);
+	if (iResult > 0) {
+		c_buffer[iResult] = 0;
+		//__INFO("Bytes received: {0}", iResult);
+		//__INFO("Server: {0}", buffer);
+	}
+	else if (iResult == 0) {
+		__INFO("Connection closing...");
+	}
+	else {
+		__ERROR("Recv failed: {0}", WSAGetLastError());
+		closesocket(m_SocketDescriptor);
+		WSACleanup();
+		m_IsConnected = false;
+		delete[] c_buffer;
+		return "#ERROR";
+	}
+	std::string buffer = c_buffer;
+	delete[] c_buffer;
+	return buffer;
+}
+
 std::string WS2Socket::Receive(size_t size) {
 	if (!m_IsConnected) {
 		__WARN("Hasn't connected! Can not receive message!");
 		return "##_receive_error";
 	}
-	
-	char* c_buffer = new char[max(1024, size+1)];
-	size_t received_byte = 0;
+
+	const size_t MAX_RECEIVED_BYTES = 1024;
+	char* c_buffer = new char[MAX_RECEIVED_BYTES + 1];
+
+	int iResult = 0;
+	int received_bytes = 0;
 	do {
-		int iResult = recv(m_SocketDescriptor, c_buffer + received_byte, 1024, 0);
+		iResult = recv(m_SocketDescriptor, c_buffer, MAX_RECEIVED_BYTES, 0);
 		if (iResult > 0) {
-			received_byte += iResult;
+			received_bytes += iResult;
 			//__INFO("Bytes received: {0}", iResult);
 			//__INFO("Server: {0}", buffer);
 		}
@@ -104,15 +139,132 @@ std::string WS2Socket::Receive(size_t size) {
 			__ERROR("Recv failed: {0}", WSAGetLastError());
 			closesocket(m_SocketDescriptor);
 			WSACleanup();
+			m_IsConnected = false;
 			delete[] c_buffer;
 			return "#ERROR";
 		}
-	} while(received_byte < size);
-
-	c_buffer[received_byte] = '\0';
-
+	} while (received_bytes < size);
+	c_buffer[received_bytes] = 0;
 	std::string buffer = c_buffer;
 	delete[] c_buffer;
 	return buffer;
 }
+
+std::string WS2Socket::Receive(const std::string& back_string) {
+	if (!m_IsConnected) {
+		__WARN("Hasn't connected! Can not receive message!");
+		return "##_receive_error";
+	}
+
+	const size_t MAX_RECEIVED_BYTES = 3'000'000;
+	char* c_buffer = new char[MAX_RECEIVED_BYTES + 1];
+
+	int iResult = 0;
+	std::string res;
+	do {
+		iResult = recv(m_SocketDescriptor, c_buffer, MAX_RECEIVED_BYTES, 0);
+		if (iResult > 0) {
+			c_buffer[iResult] = '\0';
+			std::string temp = c_buffer;
+			res += temp;
+			std::string sub_string = temp.substr(temp.size() - back_string.size());
+			if (sub_string == back_string) break;
+			//__INFO("Bytes received: {0}", iResult);
+			//__INFO("Server: {0}", buffer);
+		}
+		else if (iResult == 0) {
+			__INFO("Connection closing...");
+		}
+		else {
+			__ERROR("Recv failed: {0}", WSAGetLastError());
+			closesocket(m_SocketDescriptor);
+			WSACleanup();
+			m_IsConnected = false;
+			delete[] c_buffer;
+			return "#ERROR";
+		}
+	} while (iResult > 0);
+	delete[] c_buffer;
+	return res;
+}
+
+//std::string WS2Socket::Receive(size_t size) {
+//	if (!m_IsConnected) {
+//		__WARN("Hasn't connected! Can not receive message!");
+//		return "##_receive_error";
+//	}
+//	//TEMP
+//	size = 0; 
+//
+//	if (size == 0) {
+//		const size_t MAX_RECEIVED_BYTES = 3'000'000;
+//		char* c_buffer = new char[MAX_RECEIVED_BYTES+1];
+//		
+//		int iResult = 0;
+//		do {
+//			iResult = recv(m_SocketDescriptor, c_buffer, MAX_RECEIVED_BYTES, 0);
+//			if (c_buffer[iResult-1] == '\n') break;
+//			if (iResult < 0) {
+//				__ERROR("Recv failed: {0}", WSAGetLastError());
+//				closesocket(m_SocketDescriptor);
+//				WSACleanup();
+//				m_IsConnected = false;
+//				delete[] c_buffer;
+//				return "#ERROR";
+//			}
+//		} while (iResult > 0);
+//		//if (iResult > 0) {
+//		//	c_buffer[iResult] = 0;
+//		//	//__INFO("Bytes received: {0}", iResult);
+//		//	//__INFO("Server: {0}", buffer);
+//		//}
+//		//else if (iResult == 0) {
+//		//	__INFO("Connection closing...");
+//		//}
+//		//else {
+//		//	__ERROR("Recv failed: {0}", WSAGetLastError());
+//		//	closesocket(m_SocketDescriptor);
+//		//	WSACleanup();
+//		//	m_IsConnected = false;
+//		//	delete[] c_buffer;
+//		//	return "#ERROR";
+//		//}
+//		//c_buffer[iResult] = 0;																											
+//		std::string buffer = c_buffer;
+//		delete[] c_buffer;
+//		return buffer;
+//	}
+//	
+//	size_t byte_left = size;
+//	char* c_buffer = new char[byte_left + 1];
+//
+//
+//	size_t received_byte = 0;
+//	do {
+//		int iResult = recv(m_SocketDescriptor, c_buffer + received_byte, byte_left , 0);
+//		if (iResult > 0) {
+//			received_byte += iResult;
+//			byte_left -= iResult;
+//			//__INFO("Bytes received: {0}", iResult);
+//			//__INFO("Server: {0}", buffer);
+//		}
+//		else if (iResult == 0) {
+//			__INFO("Connection closing...");
+//		}
+//		else {
+//			__ERROR("Recv failed: {0}", WSAGetLastError());
+//			closesocket(m_SocketDescriptor);
+//			WSACleanup();
+//			m_IsConnected = false;
+//			delete[] c_buffer;
+//			return "#ERROR";
+//		}
+//	} while(byte_left > 0);
+//
+//	c_buffer[received_byte] = '\0';
+//
+//	std::string buffer = c_buffer;
+//	delete[] c_buffer;
+//	return buffer;
+//}
 

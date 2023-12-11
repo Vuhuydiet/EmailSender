@@ -10,6 +10,9 @@ public:
 	virtual void OnUpdate(float dt) override;
 	virtual void OnUIRender() override;
 private:
+	void SendMail();
+	void ListMail();
+private:
 	Ref<Socket> m_Socket;
 
 };

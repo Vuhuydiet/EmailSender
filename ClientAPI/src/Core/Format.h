@@ -4,11 +4,11 @@
 
 namespace std {
 	
-	string to_string(const std::string& arg) {
+	inline string to_string(const std::string& arg) {
 		return arg;
 	}
 
-	string to_string(const char* arg) {
+	inline string to_string(const char* arg) {
 		return arg;
 	}
 }

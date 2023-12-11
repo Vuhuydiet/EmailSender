@@ -14,7 +14,7 @@ struct FileInfo {
 struct RetrievedMail {
 public:
 	std::string ToString() const;
-	void SaveFile(const std::string& file_name, const std::filesystem::path& path);
+	void SaveFile(const std::string& file_name, const std::filesystem::path& path) const;
 public:
 	std::string Sender;
 	std::vector<std::string> Tos;
