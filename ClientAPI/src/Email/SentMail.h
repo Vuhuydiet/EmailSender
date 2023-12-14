@@ -6,6 +6,12 @@
 
 struct SentMail {
 public:
+	SentMail() = default;
+	SentMail(SentMail&& other) noexcept;
+	SentMail(const SentMail& other) noexcept = default;
+	SentMail& operator=(SentMail&& other) noexcept;
+	SentMail& operator=(const SentMail& other) noexcept = default;
+
 	void AddTo(const std::string& to);
 	void AddCc(const std::string& cc);
 	void AddBcc(const std::string& bcc);

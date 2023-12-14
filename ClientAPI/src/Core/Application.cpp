@@ -15,12 +15,13 @@ Application::Application()
 	s_Instance = this;
 
 	TextPrinter::Init();
-
 	Socket::Init();
 }
 
 Application::~Application()
 {
+	Socket::Shutdown();
+
 	s_Instance = nullptr;
 }
 

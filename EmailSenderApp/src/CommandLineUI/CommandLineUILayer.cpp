@@ -12,7 +12,7 @@ void CommandLineUILayer::OnAttach()
 {
 	__INFO("Initialised UI!");
 
-	m_Socket = Socket::Create({ AF_INET, SOCK_STREAM, IPPROTO_TCP });
+	m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
 
 	// TEMP
 	m_Socket->Connect("127.0.0.1", 2500);
