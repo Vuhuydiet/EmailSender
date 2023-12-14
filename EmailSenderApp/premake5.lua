@@ -29,7 +29,7 @@ project "EmailSenderApp"
 	{
 		"src",
 		"%{wks.location}/ClientAPI/src",
-
+		
 		"%{wks.location}/ClientAPI/vendor/spdlog/include",
 		"%{wks.location}/ClientAPI/vendor/yaml-cpp/include"
 	}

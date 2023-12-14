@@ -27,6 +27,7 @@ public:
 	std::vector<std::string> Tos;
 	std::vector<std::string> Ccs;
 
+	std::string Id;
 	std::string Subject;
 	std::string Content;
 	std::vector<FileInfo> AttachedFiles;
