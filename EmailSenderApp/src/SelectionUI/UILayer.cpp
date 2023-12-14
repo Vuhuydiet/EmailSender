@@ -1,18 +1,15 @@
 #include "app_pch.h"
 #include "UILayer.h"
  
-#define _SERVER_DEFAULT_IP			"127.0.0.1"
-#define _SMTP_DEFAULT_PORT			2500
-#define _POP3_DEFAULT_PORT			1100
+#include "DefaultVars/Vars.h"
 
 #define _YES 1
 #define _NO  0
 
-static const std::filesystem::path _DEFAULT_HOST_MAILBOX_DIR = "MSG";
-
-
 void UILayer::OnAttach()
 {
+	if (!std::filesystem::is_directory(_DEFAULT_HOST_MAILBOX_DIR))
+		std::filesystem::create_directory(_DEFAULT_HOST_MAILBOX_DIR);
 }
 
 void UILayer::OnDetach()
@@ -78,18 +75,18 @@ SentMail UILayer::MenuSendMail() {
 
 void UILayer::ListMail() {
 	// Connect POP3 server
-	m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
-	m_Socket->Connect(_SERVER_DEFAULT_IP, _POP3_DEFAULT_PORT);
-	m_Socket->Receive();
+	//m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
+	//m_Socket->Connect(_SERVER_DEFAULT_IP, _POP3_DEFAULT_PORT);
+	//m_Socket->Receive();
 
 	TextPrinter::Print("Login to server\n", TextColor::Green);
 	std::string email = GetUserInput("Email: ");
 	std::string password = GetUserInput("Password: ");
-	POP3::LoginServer(m_Socket, email, password);
-
+	
 	// TEMP
-	// TODO: move to other thread
-	POP3::RetreiveMailsFromServer(m_Socket, _DEFAULT_HOST_MAILBOX_DIR / email);
+	// TODO: write to config file
+	//POP3::LoginServer(m_Socket, email, password);
+	//POP3::RetreiveMailsFromServer(m_Socket, _DEFAULT_HOST_MAILBOX_DIR / email);
 
 	if (!std::filesystem::is_directory(_DEFAULT_HOST_MAILBOX_DIR / email))
 		std::filesystem::create_directory(_DEFAULT_HOST_MAILBOX_DIR / email);
@@ -111,7 +108,11 @@ void UILayer::ListMail() {
 	const std::map<std::string, std::string> choice_to_name = 
 		{ {"1", "Inbox"}, {"2", "Project"}, {"3", "Important"}, {"4", "Work"}, {"5", "Spam"} };
 	std::string chosen_folder = choice_to_name.at(chosen_folder_order);
-
+	
+	if (m_MailContainer.GetRetrievedMails().size() == 0) {
+		TextPrinter::Print("There was no one texted you. Maybe find a friend in life.\n");
+		return;
+	}
 	TextPrinter::Print("This is list of mail in {}\n\n", TextColor::White, chosen_folder);
 	for (int i = 0; i < m_MailContainer.GetRetrievedMails().size(); i++) {
 		const auto& mail = m_MailContainer.GetRetrievedMails()[i];
@@ -165,6 +166,9 @@ void UILayer::OnUpdate(float dt) {
 			bool isSent = SMTP::SendMail(m_Socket, mail);
 			isSent ? TextPrinter::Print("Sending Success!\n\n", TextColor::Green) : TextPrinter::Print("Sending Failed!\n\n", TextColor::Red);
 
+			m_Socket->Send("QUIT");
+			m_Socket->Receive();
+
 			m_Socket->Disconnect();
 			m_Socket = nullptr;
 		}
@@ -174,6 +178,7 @@ void UILayer::OnUpdate(float dt) {
 		else if (choice == "3") {
 			m_Socket = nullptr;
 			Application::Get().Close();
+			TextPrinter::Print("Closing application...\n");
 		}
 	} while (false);
 }

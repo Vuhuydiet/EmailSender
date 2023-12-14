@@ -74,7 +74,6 @@ namespace POP3 {
             const std::filesystem::path path = item.path();
             downloaded_mails.insert(path.filename().string());
         }
-
         std::vector<size_t> sizeOfMails = GetSizeOfMails(mail_receiver);
         size_t mail_amount = sizeOfMails.size();
         std::vector<std::string> mail_ids = FindMailIDs(mail_receiver, mail_amount);

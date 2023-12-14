@@ -78,8 +78,8 @@ void WS2Socket::Connect(const std::string& ip, int port)
 		Delete();
 		return;
 	}
-	std::string svResponse = Receive();
 	m_IsConnected = true;
+	std::string svResponse = Receive();
 }
 
 void WS2Socket::Disconnect()
@@ -94,10 +94,8 @@ void WS2Socket::Disconnect()
 
 void WS2Socket::Send(const std::string& msg)
 {
-	if (!m_IsConnected) {
-		__WARN("Hasn't connected, can not send message!");
-		return;
-	} 
+	ASSERT(m_IsConnected, "Hasn't connected, can not send message!");
+
 	std::string formatted_msg = msg + "\r\n";
 	for (int i = 0; i < formatted_msg.size(); i += _MAX_SIZE_PER_SEND) {
 		std::string sent_string = formatted_msg.substr(i, min(formatted_msg.size() - i, _MAX_SIZE_PER_SEND));
@@ -112,10 +110,7 @@ void WS2Socket::Send(const std::string& msg)
 }
 
 std::string WS2Socket::Receive(size_t size) {
-	if (!m_IsConnected) {
-		__WARN("Hasn't connected! Can not receive message!");
-		return _RECEIVE_ERROR;
-	}
+	ASSERT(m_IsConnected, "Hasn't connected! Can not receive message!");
 
 	std::string res;
 	int received_bytes = 0;
@@ -139,10 +134,7 @@ std::string WS2Socket::Receive(size_t size) {
 }
 
 std::string WS2Socket::Receive(const std::string& back_string) {
-	if (!m_IsConnected) {
-		__WARN("Hasn't connected! Can not receive message!");
-		return _RECEIVE_ERROR;
-	}
+	ASSERT(m_IsConnected, "Hasn't connected! Can not receive message!");
 
 	std::string res;
 	do {
