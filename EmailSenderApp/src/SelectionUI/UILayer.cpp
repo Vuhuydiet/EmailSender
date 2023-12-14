@@ -1,60 +1,41 @@
 #include "app_pch.h"
 #include "UILayer.h"
  
+#include "Config/Config.h"
+
 #include "DefaultVars/Vars.h"
+#include "HelperFunctions.h"
 
 #define _YES 1
 #define _NO  0
 
 void UILayer::OnAttach()
 {
-	if (!std::filesystem::is_directory(_DEFAULT_HOST_MAILBOX_DIR))
-		std::filesystem::create_directory(_DEFAULT_HOST_MAILBOX_DIR);
+	CreateDirsIfNotExist({ _DEFAULT_HOST_MAILBOX_DIR, _DEFAULT_CONFIG_DIR });
 }
 
 void UILayer::OnDetach()
 {
 }
 
-static bool IsNumber(const std::string& s) {
-	return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
-}
-
-
 SentMail UILayer::MenuSendMail() {
-	// Get email information
-	TextPrinter::Print("This is the information of your email.\n");
+	TextPrinter::Print("These are your email's information.\n");
 
 	SentMail mail;
 
 	mail.Sender = GetUserInput("From: ");
 
 	std::string tos = GetUserInput("To: ");
-	if (!tos.empty()) {
-		std::stringstream ss(tos);
-		std::string to;
-		while (std::getline(ss, to, ' ')) {
-			mail.AddTo(to);
-		}
-	}
+	RemoveChar(tos, ' ');
+	mail.Tos = Split(tos, ',');
 
 	std::string ccs = GetUserInput("Cc: ");
-	if (!ccs.empty()) {
-		std::stringstream ss(ccs);
-		std::string cc;
-		while (std::getline(ss, cc, ' ')) {
-			mail.AddCc(cc);
-		}
-	}
+	RemoveChar(ccs, ' ');
+	mail.Ccs = Split(ccs, ',');
 
 	std::string bccs = GetUserInput("Bcc: ");
-	if (!bccs.empty()) {
-		std::stringstream ss(bccs);
-		std::string bcc;
-		while (std::getline(ss, bcc, ' ')) {
-			mail.AddBcc(bcc);
-		}
-	}
+	RemoveChar(bccs, ' ');
+	mail.Bccs = Split(bccs, ',');
 
 	mail.Subject = GetUserInput("Subject: ");
 
@@ -79,18 +60,24 @@ void UILayer::ListMail() {
 	//m_Socket->Connect(_SERVER_DEFAULT_IP, _POP3_DEFAULT_PORT);
 	//m_Socket->Receive();
 
-	TextPrinter::Print("Login to server\n", TextColor::Green);
-	std::string email = GetUserInput("Email: ");
-	std::string password = GetUserInput("Password: ");
+	auto& config = Config::Get();
+
+	if (!config.IsLoggedIn()) {
+		TextPrinter::Print("Login to server\n", TextColor::Green);
+		std::string email = GetUserInput("Email: ");
+		std::string password = GetUserInput("Password: ");
+		Config::Get().LogIn(email, password);
+	}
 	
+	std::string username = config.Username();
+
 	// TEMP
 	// TODO: write to config file
 	//POP3::LoginServer(m_Socket, email, password);
 	//POP3::RetreiveMailsFromServer(m_Socket, _DEFAULT_HOST_MAILBOX_DIR / email);
 
-	if (!std::filesystem::is_directory(_DEFAULT_HOST_MAILBOX_DIR / email))
-		std::filesystem::create_directory(_DEFAULT_HOST_MAILBOX_DIR / email);
-	for (const auto& item : std::filesystem::directory_iterator(_DEFAULT_HOST_MAILBOX_DIR / email)) {
+	CreateDirIfNotExists(_DEFAULT_HOST_MAILBOX_DIR / username);
+	for (const auto& item : std::filesystem::directory_iterator(_DEFAULT_HOST_MAILBOX_DIR / username)) {
 		const std::filesystem::path& path = item.path();
 		m_MailContainer.AddNewMail(path);
 	}
@@ -156,7 +143,7 @@ void UILayer::OnUpdate(float dt) {
 		if (choice == "1") {
 			SentMail mail = MenuSendMail();
 
-			m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
+			m_Socket = Socket::Create(SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP);
 			m_Socket->Connect(_SERVER_DEFAULT_IP, _SMTP_DEFAULT_PORT);
 			if (!m_Socket->IsConnected()) {
 				TextPrinter::Print("Can not connect to the server, unable to send mail!", TextColor::Red);

@@ -36,6 +36,7 @@ public:
 	static void Init();
 	static void Shutdown();
 	static Ref<Socket> Create(const SocketProps& props);
+	static Ref<Socket> Create(SocketProps::AF af, SocketProps::Type type, SocketProps::Protocol protocol);
 
 protected:
 	SocketProps::AF m_Af; 

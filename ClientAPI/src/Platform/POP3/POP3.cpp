@@ -66,9 +66,9 @@ namespace POP3 {
         return sizeOfMails;
     }
 
-    void RetreiveMailsFromServer(Ref<Socket>mail_receiver, const std::filesystem::path& mailbox_folder_path) {
-        if (!std::filesystem::is_directory(mailbox_folder_path))
-            std::filesystem::create_directory(mailbox_folder_path);
+    void RetrieveMailsFromServer(Ref<Socket>mail_receiver, const std::filesystem::path& mailbox_folder_path) {
+        CreateDirIfNotExists(mailbox_folder_path);
+
         std::set<std::string> downloaded_mails;
         for (const auto& item : std::filesystem::directory_iterator(mailbox_folder_path)) {
             const std::filesystem::path path = item.path();
@@ -83,7 +83,7 @@ namespace POP3 {
                 continue;
             
             mail_receiver->Send(FMT::format("RETR {}", i + 1));
-            std::string buffer = mail_receiver->Receive(".\r\n");
+            std::string buffer = mail_receiver->Receive("\r\n.\r\n");
 
             PreprocessRawMail(buffer);
             std::ofstream mail_file(mailbox_folder_path / id);

@@ -21,3 +21,15 @@ constexpr Ref<T> CreateRef(Args&&... args) {
 }
 
 #define _found(ds, key) (ds.find(key) != ds.end())
+
+#include <filesystem>
+inline void CreateDirIfNotExists(const std::filesystem::path& path) {
+	if (!std::filesystem::is_directory(path))
+		std::filesystem::create_directory(path);
+}
+inline void CreateDirsIfNotExist(const std::vector<std::filesystem::path>& paths) {
+	for (const auto& path : paths) {
+		if (!std::filesystem::is_directory(path))
+			std::filesystem::create_directory(path);
+	}
+}

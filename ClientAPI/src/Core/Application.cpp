@@ -1,7 +1,6 @@
 #include "pch.h"
 #include "Application.h"
 
-
 #include "Renderer/TextPrinter.h"
 #include "Socket.h"
 
@@ -43,8 +42,8 @@ void Application::Run()
 		threads.emplace_back(run_layer, layer);
 	}
 
-	for (auto& thred : threads) {
-		thred.join();
+	for (auto& thread : threads) {
+		thread.join();
 	}
 }
 

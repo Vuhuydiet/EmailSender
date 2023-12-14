@@ -13,9 +13,11 @@ bin-int/
 **.ini
 **.json
 
-# Log files
+# text files
 **.log
-
-# Text files
 **.msg
 **.txt
+
+# images
+**.png
+**.jpg

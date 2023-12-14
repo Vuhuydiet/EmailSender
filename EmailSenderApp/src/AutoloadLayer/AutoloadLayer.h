@@ -9,15 +9,13 @@ public:
 	virtual void OnUpdate(float dt) override;
 
 private:
-	void LoadConfigFile(const std::filesystem::path& path);
-	bool IsLoggedIn() const;
+	void ReloadConfigAttributes();
 private:
 	Ref<Socket> m_Socket = nullptr;
 	float m_TimeCounter = 0.0f;
 
-	// to be read in config file
+	// To be read in config file
 	float m_AutoloadDelay = 0.0f;
 	std::string m_Username;
 	std::string m_Password;
-	std::filesystem::path m_MessageFolderPath;
 };
