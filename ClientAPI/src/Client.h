@@ -10,5 +10,8 @@
 #include "Renderer/TextPrinter.h"
 
 #include "Email/SentMail.h"
+#include "Email/RetrievedMail.h"
+#include "Email/Library.h"
+
 #include "Platform/SMTP/SMTP.h"
 #include "Platform/POP3/POP3.h"

@@ -14,5 +14,5 @@ namespace POP3 {
 
 	// Mail interacting functions
 	void LoginServer(Ref<Socket>mail_receiver, const std::string& user_name, const std::string& password);
-	void RetreiveMailSFromServer(Ref<Socket>mail_receiver, Library& mail_container, const std::filesystem::path& mailbox_folder_path);
+	void RetreiveMailsFromServer(Ref<Socket>mail_receiver, const std::filesystem::path& mailbox_folder_path);
 }

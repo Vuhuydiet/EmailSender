@@ -13,6 +13,13 @@ struct FileInfo {
 
 struct RetrievedMail {
 public:
+	RetrievedMail() = default;
+	RetrievedMail(const std::filesystem::path& msg_path);
+	RetrievedMail(RetrievedMail&& other) noexcept;
+	RetrievedMail(const RetrievedMail& other) = default;
+	RetrievedMail& operator=(RetrievedMail&& other) noexcept;
+	RetrievedMail& operator=(const RetrievedMail& other) = default;
+
 	std::string ToString() const;
 	void SaveFile(const std::string& file_name, const std::filesystem::path& path) const;
 public:

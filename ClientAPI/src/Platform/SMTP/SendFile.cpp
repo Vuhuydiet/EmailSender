@@ -47,7 +47,7 @@ namespace SMTP {
         std::string file_data((std::istreambuf_iterator<char>(file)), std::istreambuf_iterator<char>());
 
         // send content file
-        std::string base64_encoded = base64::Base64_Encode(file_data);
+        std::string base64_encoded = base64::Encode(file_data);
         int line_length = 72; // divide data 
         for (size_t i = 0; i < base64_encoded.size(); i += line_length) {
             socket->Send(base64_encoded.substr(i, line_length));

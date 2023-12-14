@@ -4,6 +4,7 @@
 #include "Base64/Base64.h"
 
 namespace SMTP {
+
 	static std::string AddressListToString(const std::vector<std::string>& addr) {
 		std::string res;
 		for (int i = 0; i < addr.size(); i++) {
@@ -18,18 +19,18 @@ namespace SMTP {
 		// Output the current time
 		std::string id = "<";
 		char delim = '-';
-		id += base64::Base64_Encode("0" + std::to_string(date.day) + "th") + delim;
-		id += base64::Base64_Encode(std::to_string(date.hour)) + delim;
-		id += base64::Base64_Encode(std::to_string(date.min)) + delim;
-		id += base64::Base64_Encode(std::to_string(date.sec)) + delim;
+		id += base64::Encode("0" + std::to_string(date.day) + "th") + delim;
+		id += base64::Encode(std::to_string(date.hour)) + delim;
+		id += base64::Encode(std::to_string(date.min)) + delim;
+		id += base64::Encode(std::to_string(date.sec)) + delim;
 		
 		// get user name from address mail
 		size_t atPos = sender.find('@');
 		if (atPos != std::string::npos) {
-			id += base64::Base64_Encode(sender.substr(0, atPos));
+			id += base64::Encode(sender.substr(0, atPos));
 		}
 		else { // get all address mail
-			id += base64::Base64_Encode(sender);
+			id += base64::Encode(sender);
 		}		
 		return id + "@gmail.com>";
 	}
@@ -38,9 +39,9 @@ namespace SMTP {
 		// Output the current time
 		std::string id = "";
 		id = "------------";
-		id += base64::Base64_Encode(std::to_string(date.hour));
-		id += base64::Base64_Encode(std::to_string(date.min));
-		id += base64::Base64_Encode(std::to_string(date.sec));
+		id += base64::Encode(std::to_string(date.hour));
+		id += base64::Encode(std::to_string(date.min));
+		id += base64::Encode(std::to_string(date.sec));
 		return id;
 	}
 

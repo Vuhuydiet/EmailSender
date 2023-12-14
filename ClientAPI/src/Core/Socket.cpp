@@ -8,7 +8,7 @@ Socket::Socket(const SocketProps& props)
 {
 }
 
-Socket::Socket(int af, int type, int protocol)
+Socket::Socket(SocketProps::AF af, SocketProps::Type type, SocketProps::Protocol protocol)
 	: m_Af(af), m_Type(type), m_Protocol(protocol)
 {
 }
@@ -16,6 +16,11 @@ Socket::Socket(int af, int type, int protocol)
 void Socket::Init()
 {
 	WS2Socket::Init();
+}
+
+void Socket::Shutdown() 
+{
+	WS2Socket::Shutdown();
 }
 
 Ref<Socket> Socket::Create(const SocketProps& props)
