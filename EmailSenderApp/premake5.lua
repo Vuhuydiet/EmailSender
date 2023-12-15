@@ -15,7 +15,8 @@ project "EmailSenderApp"
 	defines
 	{
 		"_APP",
-		"_CRT_SECURE_NO_WARNINGS"
+		"_CRT_SECURE_NO_WARNINGS",
+		"YAML_CPP_STATIC_DEFINE"
 	}
 
 	files
@@ -28,12 +29,16 @@ project "EmailSenderApp"
 	{
 		"src",
 		"%{wks.location}/ClientAPI/src",
-		"%{wks.location}/ClientAPI/vendor/spdlog/include"
+		
+		"%{wks.location}/ClientAPI/vendor/spdlog/include",
+		"%{wks.location}/ClientAPI/vendor/yaml-cpp/include"
 	}
 
 	links
 	{
-		"ClientAPI"
+		"ClientAPI",
+
+		"yaml-cpp"
 	}
 
 	filter "system:windows"

@@ -2,7 +2,6 @@
 #include "Application.h"
 
 #include "Renderer/TextPrinter.h"
-
 #include "Socket.h"
 
 Application* Application::s_Instance = nullptr;
@@ -27,21 +26,24 @@ Application::~Application()
 
 void Application::Run()
 {
-	while (IsRunning())
-	{
-		float currentTime = m_Clock.GetSeconds();
-		float dt = currentTime - m_LastFrameTime;
-		m_LastFrameTime = currentTime;
+	auto run_layer = [&](Layer* layer) {
+		while (IsRunning()) {
+			float currentTime = m_Clock.GetSeconds();
+			float dt = currentTime - m_LastFrameTime;
+			m_LastFrameTime = currentTime;
 
-		for (auto& layer : m_LayerStack)
-		{
 			layer->OnUpdate(dt);
-		}
-
-		for (auto& layer : m_LayerStack) 
-		{
 			layer->OnUIRender();
 		}
+	};
+
+	std::vector<std::thread> threads;
+	for (const auto& layer : m_LayerStack) {
+		threads.emplace_back(run_layer, layer);
+	}
+
+	for (auto& thread : threads) {
+		thread.join();
 	}
 }
 

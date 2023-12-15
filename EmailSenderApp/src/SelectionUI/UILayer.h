@@ -2,6 +2,8 @@
 
 #include <Client.h>
 
+#include "Menu.h"
+
 class UILayer : public Layer {
 public:
 	virtual void OnAttach() override;
@@ -18,6 +20,8 @@ private:
 private:
 	Ref<Socket> m_Socket;
 
-	Library m_MailContainer;
-
+	Ref<Library> m_MailContainer = nullptr;
+	Ref<FilterConfig> m_FilterConfig = nullptr;
+private:
+	Ref<Menu> m_Start, m_Login, m_Menu, m_SendMail, m_End, m_ShowFolders, m_ShowMails, m_DisplayMail, m_InputSavingFilePath;
 };

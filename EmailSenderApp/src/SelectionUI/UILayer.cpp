@@ -1,63 +1,55 @@
 #include "app_pch.h"
 #include "UILayer.h"
  
-#define _SERVER_DEFAULT_IP			"127.0.0.1"
-#define _SMTP_DEFAULT_PORT			2500
-#define _POP3_DEFAULT_PORT			1100
+#include "Config/Config.h"
+
+#include "DefaultVars/Vars.h"
+#include "HelperFunctions.h"
 
 #define _YES 1
 #define _NO  0
 
-static const std::filesystem::path _DEFAULT_HOST_MAILBOX_DIR = "MSG";
-
-
 void UILayer::OnAttach()
 {
+	CreateDirsIfNotExist({ _DEFAULT_HOST_MAILBOX_DIR, _DEFAULT_CONFIG_DIR });
+
+	m_Start = CreateRef<Menu>();
+	m_Start->SetFunction([&]() { m_Start->next = m_Login; });
+
+	m_Login = CreateRef<Menu>();
+
+	m_Menu = CreateRef<Menu>();
+	m_SendMail = CreateRef<Menu>();
+	m_End = CreateRef<Menu>();
+	m_ShowFolders = CreateRef<Menu>();
+	m_ShowMails = CreateRef<Menu>();
+	m_DisplayMail = CreateRef<Menu>();
+	m_InputSavingFilePath = CreateRef<Menu>();
+
 }
 
 void UILayer::OnDetach()
 {
 }
 
-static bool IsNumber(const std::string& s) {
-	return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
-}
-
-
 SentMail UILayer::MenuSendMail() {
-	// Get email information
-	TextPrinter::Print("This is the information of your email.\n");
+	TextPrinter::Print("These are your email's information.\n");
 
 	SentMail mail;
 
 	mail.Sender = GetUserInput("From: ");
 
 	std::string tos = GetUserInput("To: ");
-	if (!tos.empty()) {
-		std::stringstream ss(tos);
-		std::string to;
-		while (std::getline(ss, to, ' ')) {
-			mail.AddTo(to);
-		}
-	}
+	RemoveChar(tos, ' ');
+	mail.Tos = Split(tos, ',');
 
 	std::string ccs = GetUserInput("Cc: ");
-	if (!ccs.empty()) {
-		std::stringstream ss(ccs);
-		std::string cc;
-		while (std::getline(ss, cc, ' ')) {
-			mail.AddCc(cc);
-		}
-	}
+	RemoveChar(ccs, ' ');
+	mail.Ccs = Split(ccs, ',');
 
 	std::string bccs = GetUserInput("Bcc: ");
-	if (!bccs.empty()) {
-		std::stringstream ss(bccs);
-		std::string bcc;
-		while (std::getline(ss, bcc, ' ')) {
-			mail.AddBcc(bcc);
-		}
-	}
+	RemoveChar(bccs, ' ');
+	mail.Bccs = Split(bccs, ',');
 
 	mail.Subject = GetUserInput("Subject: ");
 
@@ -76,24 +68,32 @@ SentMail UILayer::MenuSendMail() {
 	return mail;
 }
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 void UILayer::ListMail() {
 	// Connect POP3 server
-	m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
-	m_Socket->Connect(_SERVER_DEFAULT_IP, _POP3_DEFAULT_PORT);
-	m_Socket->Receive();
+	//m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
+	//m_Socket->Connect(_SERVER_DEFAULT_IP, _POP3_DEFAULT_PORT);
+	//m_Socket->Receive();
 
-	TextPrinter::Print("Login to server\n", TextColor::Green);
-	std::string email = GetUserInput("Email: ");
-	std::string password = GetUserInput("Password: ");
-	POP3::LoginServer(m_Socket, email, password);
+	auto& config = Config::Get();
+
+	if (!config.IsLoggedIn()) {
+		TextPrinter::Print("Login to server\n", TextColor::Green);
+		std::string email = GetUserInput("Email: ");
+		std::string password = GetUserInput("Password: ");
+		config.LogIn(email, password);
+	}
+	
+	std::string username = config.Username();
 
 	// TEMP
-	// TODO: move to other thread
-	POP3::RetreiveMailsFromServer(m_Socket, _DEFAULT_HOST_MAILBOX_DIR / email);
+	// TODO: write to config file
+	//POP3::LoginServer(m_Socket, email, password);
+	//POP3::RetreiveMailsFromServer(m_Socket, _DEFAULT_HOST_MAILBOX_DIR / email);
 
-	if (!std::filesystem::is_directory(_DEFAULT_HOST_MAILBOX_DIR / email))
-		std::filesystem::create_directory(_DEFAULT_HOST_MAILBOX_DIR / email);
-	for (const auto& item : std::filesystem::directory_iterator(_DEFAULT_HOST_MAILBOX_DIR / email)) {
+	CreateDirIfNotExists(_DEFAULT_HOST_MAILBOX_DIR / username);
+	for (const auto& item : std::filesystem::directory_iterator(_DEFAULT_HOST_MAILBOX_DIR / username)) {
 		const std::filesystem::path& path = item.path();
 		m_MailContainer.AddNewMail(path);
 	}
@@ -111,7 +111,11 @@ void UILayer::ListMail() {
 	const std::map<std::string, std::string> choice_to_name = 
 		{ {"1", "Inbox"}, {"2", "Project"}, {"3", "Important"}, {"4", "Work"}, {"5", "Spam"} };
 	std::string chosen_folder = choice_to_name.at(chosen_folder_order);
-
+	
+	if (m_MailContainer.GetRetrievedMails().size() == 0) {
+		TextPrinter::Print("There was no one texted you. Maybe find a friend in life.\n");
+		return;
+	}
 	TextPrinter::Print("This is list of mail in {}\n\n", TextColor::White, chosen_folder);
 	for (int i = 0; i < m_MailContainer.GetRetrievedMails().size(); i++) {
 		const auto& mail = m_MailContainer.GetRetrievedMails()[i];
@@ -142,6 +146,8 @@ void UILayer::ListMail() {
 	}
 }
 
+// ----------------------------------------------------------------------------------------------------------------- //
+
 void UILayer::OnUpdate(float dt) {
 	const std::string menu = 
 		"Please choose Menu: \n"
@@ -150,13 +156,14 @@ void UILayer::OnUpdate(float dt) {
 		"3. Exit\n";
 	TextPrinter::Print(menu, TextColor::Green);
 
+	const auto& config = Config::Get();
 	std::string choice = GetUserInput("Your choice: ", {"1", "2", "3"}, TextColor::Blue);
 	do {
 		if (choice == "1") {
 			SentMail mail = MenuSendMail();
 
-			m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
-			m_Socket->Connect(_SERVER_DEFAULT_IP, _SMTP_DEFAULT_PORT);
+			m_Socket = Socket::Create(SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP);
+			m_Socket->Connect(config.MailServer(), config.SMTP_Port());
 			if (!m_Socket->IsConnected()) {
 				TextPrinter::Print("Can not connect to the server, unable to send mail!", TextColor::Red);
 				break;
@@ -164,6 +171,9 @@ void UILayer::OnUpdate(float dt) {
 			TextPrinter::Print("\nSending your email...\n");
 			bool isSent = SMTP::SendMail(m_Socket, mail);
 			isSent ? TextPrinter::Print("Sending Success!\n\n", TextColor::Green) : TextPrinter::Print("Sending Failed!\n\n", TextColor::Red);
+
+			m_Socket->Send("QUIT");
+			m_Socket->Receive();
 
 			m_Socket->Disconnect();
 			m_Socket = nullptr;
@@ -174,6 +184,7 @@ void UILayer::OnUpdate(float dt) {
 		else if (choice == "3") {
 			m_Socket = nullptr;
 			Application::Get().Close();
+			TextPrinter::Print("Closing application...\n");
 		}
 	} while (false);
 }

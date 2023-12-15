@@ -27,3 +27,8 @@ Ref<Socket> Socket::Create(const SocketProps& props)
 {
 	return CreateRef<WS2Socket>(props);
 }
+
+Ref<Socket> Socket::Create(SocketProps::AF af, SocketProps::Type type, SocketProps::Protocol protocol)
+{
+	return CreateRef<WS2Socket>(af, type, protocol);
+}

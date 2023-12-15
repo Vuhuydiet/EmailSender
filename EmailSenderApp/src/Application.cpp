@@ -4,6 +4,7 @@
 
 #include "CommandLineUI/CommandLineUILayer.h"
 #include "SelectionUI/UILayer.h"
+#include "AutoloadLayer/AutoloadLayer.h"
 
 class EmailSender : public Application 
 {
@@ -12,6 +13,7 @@ public:
 	{
 		// PushOverlay(new CommandLineUILayer());
 		PushOverlay(new UILayer());
+		PushLayer(new AutoloadLayer());
 	}
 
 	~EmailSender() {}

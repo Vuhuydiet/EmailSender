@@ -15,6 +15,8 @@ static std::string FindBoundary(const std::string& first_line) {
 }
 
 RetrievedMail::RetrievedMail(const std::filesystem::path& msg_path) {
+	Id = msg_path.filename().string();
+
 	std::ifstream in(msg_path);
 
 	std::string line;
