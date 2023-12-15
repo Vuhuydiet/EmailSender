@@ -6,7 +6,7 @@
 
 class Config {
 public:
-	Config();
+	void Init(const std::filesystem::path& path);
 	void Load();
 	void Save();
 	
@@ -24,7 +24,7 @@ public:
 
 	void LogIn(const std::string& username, const std::string password);
 	void LogOut();
-	bool IsLoggedIn() const { return !m_Username.empty(); }
+	bool IsLoggedIn() const { return !m_Username.empty() && m_Username != "null"; }
 
 	static Config& Get() { static Config s_Config; return s_Config; }
 
@@ -36,4 +36,5 @@ private:
 
 	std::string m_Username;
 	std::string m_Password;
+	std::filesystem::path m_ConfigFilePath;
 };

@@ -3,12 +3,14 @@
 
 #include <yaml-cpp/yaml.h>
 
-Config::Config() {
-	Save();
+void Config::Init(const std::filesystem::path& path) {
+	m_ConfigFilePath = path;
+	if (!std::filesystem::exists(path))
+		Save();
 }
 
 void Config::Load() {
-	YAML::Node data = YAML::LoadFile(_DEFAULT_APP_CONFIG_FILEPATH.string());
+	YAML::Node data = YAML::LoadFile(m_ConfigFilePath.string());
 
 	m_MailServer = data["Mail Server"].as<std::string>();
 	m_SMTP_port = data["SMTP port"].as<int>();
@@ -30,7 +32,7 @@ void Config::Save() {
 	out << YAML::Key << "Password" << YAML::Value << m_Password;
 	out << YAML::EndMap;
 
-	std::ofstream fout(_DEFAULT_APP_CONFIG_FILEPATH.string());
+	std::ofstream fout(m_ConfigFilePath);
 	fout << out.c_str();
 	fout.close();
 }
