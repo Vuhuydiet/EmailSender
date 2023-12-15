@@ -17,6 +17,7 @@ bin-int/
 **.log
 **.msg
 **.txt
+**.yml
 
 # images
 **.png

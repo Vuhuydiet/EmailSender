@@ -24,12 +24,12 @@ constexpr Ref<T> CreateRef(Args&&... args) {
 
 #include <filesystem>
 inline void CreateDirIfNotExists(const std::filesystem::path& path) {
-	if (!std::filesystem::is_directory(path))
+	if (!std::filesystem::exists(path))
 		std::filesystem::create_directory(path);
 }
 inline void CreateDirsIfNotExist(const std::vector<std::filesystem::path>& paths) {
 	for (const auto& path : paths) {
-		if (!std::filesystem::is_directory(path))
+		if (!std::filesystem::exists(path))
 			std::filesystem::create_directory(path);
 	}
 }

@@ -15,7 +15,7 @@ private:
 	float m_TimeCounter = 0.0f;
 
 	// To be read in config file
-	float m_AutoloadDelay = 0.0f;
+	float m_AutoloadDelay = 10.0f;
 	std::string m_Username;
 	std::string m_Password;
 };

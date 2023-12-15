@@ -30,7 +30,7 @@
 
 // ----------------------------------------------------------------------------------------- //
 
-#define __ostream_target std::cout
+#define __ostream_target std::cerr
 
 #define __MAX_OUTPUT_SIZE (500 * _KB)
 
@@ -68,7 +68,7 @@ public:
     void _set_space(char space = ' ') { this->_space = space; }
 
     __Printer() {
-        _start = clock();
+        _start = _end = clock();
     }
 
     ~__Printer() {

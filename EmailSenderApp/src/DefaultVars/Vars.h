@@ -4,7 +4,6 @@
 
 const std::filesystem::path _DEFAULT_CONFIG_DIR				= "Config";
 const std::filesystem::path _DEFAULT_APP_CONFIG_FILEPATH	= _DEFAULT_CONFIG_DIR / "Config.yml";
-const std::filesystem::path _DEFAULT_FILTER_CONFIG_FILEPATH = _DEFAULT_CONFIG_DIR / "Filter.yml";
 
 const std::filesystem::path _DEFAULT_HOST_MAILBOX_DIR = "MSG";
 

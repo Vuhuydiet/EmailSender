@@ -12,6 +12,20 @@
 void UILayer::OnAttach()
 {
 	CreateDirsIfNotExist({ _DEFAULT_HOST_MAILBOX_DIR, _DEFAULT_CONFIG_DIR });
+
+	m_Start = CreateRef<Menu>();
+	m_Start->SetFunction([&]() { m_Start->next = m_Login; });
+
+	m_Login = CreateRef<Menu>();
+
+	m_Menu = CreateRef<Menu>();
+	m_SendMail = CreateRef<Menu>();
+	m_End = CreateRef<Menu>();
+	m_ShowFolders = CreateRef<Menu>();
+	m_ShowMails = CreateRef<Menu>();
+	m_DisplayMail = CreateRef<Menu>();
+	m_InputSavingFilePath = CreateRef<Menu>();
+
 }
 
 void UILayer::OnDetach()
@@ -54,6 +68,8 @@ SentMail UILayer::MenuSendMail() {
 	return mail;
 }
 
+// ------------------------------------------------------------------------------------------------------------------------
+
 void UILayer::ListMail() {
 	// Connect POP3 server
 	//m_Socket = Socket::Create({ SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP });
@@ -66,7 +82,7 @@ void UILayer::ListMail() {
 		TextPrinter::Print("Login to server\n", TextColor::Green);
 		std::string email = GetUserInput("Email: ");
 		std::string password = GetUserInput("Password: ");
-		Config::Get().LogIn(email, password);
+		config.LogIn(email, password);
 	}
 	
 	std::string username = config.Username();
@@ -130,6 +146,8 @@ void UILayer::ListMail() {
 	}
 }
 
+// ----------------------------------------------------------------------------------------------------------------- //
+
 void UILayer::OnUpdate(float dt) {
 	const std::string menu = 
 		"Please choose Menu: \n"
@@ -138,13 +156,14 @@ void UILayer::OnUpdate(float dt) {
 		"3. Exit\n";
 	TextPrinter::Print(menu, TextColor::Green);
 
+	const auto& config = Config::Get();
 	std::string choice = GetUserInput("Your choice: ", {"1", "2", "3"}, TextColor::Blue);
 	do {
 		if (choice == "1") {
 			SentMail mail = MenuSendMail();
 
 			m_Socket = Socket::Create(SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP);
-			m_Socket->Connect(_SERVER_DEFAULT_IP, _SMTP_DEFAULT_PORT);
+			m_Socket->Connect(config.MailServer(), config.SMTP_Port());
 			if (!m_Socket->IsConnected()) {
 				TextPrinter::Print("Can not connect to the server, unable to send mail!", TextColor::Red);
 				break;

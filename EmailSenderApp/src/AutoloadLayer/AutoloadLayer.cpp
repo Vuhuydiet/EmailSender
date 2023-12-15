@@ -7,14 +7,15 @@
 void AutoloadLayer::OnUpdate(float dt) {
 	m_TimeCounter += dt;
 	
-	Config::Get().Load();
+	auto& config = Config::Get();
+	config.Load();
 	ReloadConfigAttributes();
 
-	if (m_TimeCounter < m_AutoloadDelay || !Config::Get().IsLoggedIn())
+	if (m_TimeCounter < m_AutoloadDelay || !config.IsLoggedIn())
 		return;
 
 	m_Socket = Socket::Create(SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP);
-	m_Socket->Connect(_SERVER_DEFAULT_IP, _POP3_DEFAULT_PORT);
+	m_Socket->Connect(config.MailServer(), config.POP3_Port());
 
 	POP3::LoginServer(m_Socket, m_Username, m_Password);
 	POP3::RetrieveMailsFromServer(m_Socket, _DEFAULT_HOST_MAILBOX_DIR / m_Username);

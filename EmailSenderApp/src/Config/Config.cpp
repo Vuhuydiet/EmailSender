@@ -3,6 +3,10 @@
 
 #include <yaml-cpp/yaml.h>
 
+Config::Config() {
+	Save();
+}
+
 void Config::Load() {
 	YAML::Node data = YAML::LoadFile(_DEFAULT_APP_CONFIG_FILEPATH.string());
 
@@ -12,7 +16,6 @@ void Config::Load() {
 	m_Autoload = data["Autoload"].as<float>();
 	m_Username = data["Username"].as<std::string>();
 	m_Password = data["Password"].as<std::string>();
-
 }
 
 void Config::Save() {

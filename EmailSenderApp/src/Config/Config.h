@@ -6,6 +6,7 @@
 
 class Config {
 public:
+	Config();
 	void Load();
 	void Save();
 	
