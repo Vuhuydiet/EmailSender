@@ -23,7 +23,7 @@ public:
 
 	MailboxConfig& GetMailboxConfig() { return m_Config; }
 private:
-	Ref<RetrievedMail> AddNewMail(const RetrievedMail& retrieved_mail, const std::vector<FilterType>& filters = { FilterType::From, FilterType::Subject, FilterType::Content });
+	Ref<RetrievedMail> AddNewMail(const std::filesystem::path& msg_path, const std::vector<FilterType>& filters = { FilterType::From, FilterType::Subject, FilterType::Content });
 private:
 	std::string m_DefaultFolder = "Default";
 

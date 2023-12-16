@@ -10,8 +10,8 @@
 
 class Menu {
 public:
-	Menu(const std::string& name)
-		: m_Name(name)
+	Menu(const std::string& name, bool autoclear = true)
+		: m_Name(name), m_AutoClearScreen(autoclear)
 	{
 	}
 
@@ -20,6 +20,8 @@ public:
 
 	void Run() {
 		m_RunFn(); 
+		if (m_AutoClearScreen)
+			system("CLS");
 	}
 
 public:
@@ -27,4 +29,6 @@ public:
 private:
 	std::string m_Name;
 	std::function<void()> m_RunFn = []() {};
+
+	bool m_AutoClearScreen;
 };

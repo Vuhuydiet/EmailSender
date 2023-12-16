@@ -71,6 +71,8 @@ namespace POP3 {
 
         std::set<std::string> downloaded_mails;
         for (const auto& item : std::filesystem::directory_iterator(mailbox_folder_path)) {
+            if (item.path().extension() != ".msg")
+                continue;
             const std::filesystem::path path = item.path();
             downloaded_mails.insert(path.filename().string());
         }

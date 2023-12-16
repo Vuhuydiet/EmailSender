@@ -1,13 +1,12 @@
 #include <pch.h>
 
 #include "Library.h"
+#include <Debug/Debug.h>
 
 Library::Library(const std::filesystem::path& mailbox_dir)
 	: m_MailboxDir(mailbox_dir)
 {
-	for (const auto& item : std::filesystem::directory_iterator(m_MailboxDir)) {
-		AddNewMail(RetrievedMail(item.path()));
-	}
+	LoadMails();
 }
 
 Library::~Library() {
@@ -18,25 +17,30 @@ void Library::LoadMails() {
 		if (_found(m_AddedMails, item.path().filename().string()))
 			continue;
 		Ref<RetrievedMail> mail = AddNewMail(item.path());
-		if (mail && m_Config.IsAddedToReadStatus(mail->Id))
-			m_Config.SetReadStatus(mail->Id, false);
 	}
 }
 
-Ref<RetrievedMail> Library::AddNewMail(const RetrievedMail& retrieved_mail, const std::vector<FilterType>& filters) {
-	if (_found(m_AddedMails, retrieved_mail.Id)) 
+Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, const std::vector<FilterType>& filters) {
+	if (msg_path.extension() != ".msg")
 		return nullptr;
-	Ref<RetrievedMail> retrieved_mail_ref = CreateRef<RetrievedMail>(retrieved_mail);
-	std::vector<std::string> filtered_folders = m_Config.FilterMail(retrieved_mail_ref, filters);
+	Ref<RetrievedMail> retrieved_mail = CreateRef<RetrievedMail>(msg_path);
+	if (_found(m_AddedMails, retrieved_mail->Id)) 
+		return nullptr;
+	std::vector<std::string> filtered_folders = m_Config.FilterMail(retrieved_mail, filters);
 
 	for (const auto& folder : filtered_folders) {
-		m_RetrievedMails[folder].push_back(retrieved_mail_ref);
+		m_RetrievedMails[folder].push_back(retrieved_mail);
 	}
 	if (filtered_folders.empty())
-		m_RetrievedMails[m_DefaultFolder].push_back(retrieved_mail_ref);
+		m_RetrievedMails[m_DefaultFolder].push_back(retrieved_mail);
 
-	m_AddedMails.insert(retrieved_mail.Id);
-	return retrieved_mail_ref;
+	m_AddedMails.insert(retrieved_mail->Id);
+
+	if (!m_Config.IsAddedToReadStatus(retrieved_mail->Id)) {
+		m_Config.SetReadStatus(retrieved_mail->Id, false);
+	}
+
+	return retrieved_mail;
 }
 
 void Library::SetDefaultFolder(const std::string& name) {

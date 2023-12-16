@@ -11,7 +11,7 @@ public:
 	EmailSender() 
 	{
 		PushOverlay(new UILayer());
-		//PushLayer(new AutoloadLayer());
+		PushLayer(new AutoloadLayer());
 	}
 
 	~EmailSender() {}
