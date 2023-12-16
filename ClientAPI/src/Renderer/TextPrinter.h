@@ -3,7 +3,7 @@
 #define SPDLOG_EOL ""
 #include "spdlog/spdlog.h"
 
-enum class TextColor { White, Blue, Green, Yellow, Red, RedWhite };
+enum TextColor { White, Blue, Green, Yellow, Red, RedWhite };
 
 class TextPrinter {
 public:

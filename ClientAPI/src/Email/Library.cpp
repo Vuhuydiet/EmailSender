@@ -1,23 +1,60 @@
 #include <pch.h>
 
 #include "Library.h"
+#include <Debug/Debug.h>
 
-void Library::AddNewMail(const RetrievedMail& retrieved_mail, const std::string& folder_name) {
-	if (_found(m_AddedMails, retrieved_mail.Id)) 
-		return;
-	Ref<RetrievedMail> retrieved_mail_ref = CreateRef<RetrievedMail>(retrieved_mail);
-	/*std::vector<std::string> filtered_folders = m_Filter.FilterMail(retrieved_mail_ref, filter_types);
+Library::Library(const std::filesystem::path& mailbox_dir)
+	: m_MailboxDir(mailbox_dir)
+{
+	LoadMails();
+}
+
+Library::~Library() {
+}
+
+void Library::LoadMails() {
+	for (auto& item : std::filesystem::directory_iterator(m_MailboxDir)) {
+		if (_found(m_AddedMails, item.path().filename().string()))
+			continue;
+		Ref<RetrievedMail> mail = AddNewMail(item.path());
+	}
+}
+
+Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, const std::vector<FilterType>& filters) {
+	if (msg_path.extension() != ".msg")
+		return nullptr;
+	Ref<RetrievedMail> retrieved_mail = CreateRef<RetrievedMail>(msg_path);
+	if (_found(m_AddedMails, retrieved_mail->Id)) 
+		return nullptr;
+	std::vector<std::string> filtered_folders = m_Config.FilterMail(retrieved_mail, filters);
 
 	for (const auto& folder : filtered_folders) {
-		m_RetrievedMails[folder].push_back(retrieved_mail_ref);
-	}*/
+		m_RetrievedMails[folder].push_back(retrieved_mail);
+	}
+	if (filtered_folders.empty())
+		m_RetrievedMails[m_DefaultFolder].push_back(retrieved_mail);
 
-	m_AddedMails.insert(retrieved_mail.Id);
-	m_RetrievedMails[folder_name].push_back(retrieved_mail_ref);
+	m_AddedMails.insert(retrieved_mail->Id);
+
+	if (!m_Config.IsAddedToReadStatus(retrieved_mail->Id)) {
+		m_Config.SetReadStatus(retrieved_mail->Id, false);
+	}
+
+	return retrieved_mail;
+}
+
+void Library::SetDefaultFolder(const std::string& name) {
+	if (m_DefaultFolder == "Default") {
+		for (auto& mail : m_RetrievedMails["Default"]) {
+			m_RetrievedMails[name].push_back(mail);
+		}
+		m_RetrievedMails.erase("Default");
+	}
+	m_DefaultFolder = name;
 }
 
 void Library::CreateFolder(const std::string& folder) {
-	m_RetrievedMails[folder] = std::vector<Ref<RetrievedMail>>();
+	m_RetrievedMails[folder];
 }
 
 const std::vector<Ref<RetrievedMail>>& Library::GetRetrievedMails(const std::string& folder_name) const {

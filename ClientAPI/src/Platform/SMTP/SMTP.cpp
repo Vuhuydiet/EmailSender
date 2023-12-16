@@ -8,7 +8,7 @@ namespace SMTP {
 	static std::string AddressListToString(const std::vector<std::string>& addr) {
 		std::string res;
 		for (int i = 0; i < addr.size(); i++) {
-			res += FMT::format("<{}>", addr[i]);
+			res += FMT::format("{}", addr[i]);
 			if (i != addr.size() - 1)
 				res += ", ";
 		}
@@ -35,7 +35,7 @@ namespace SMTP {
 		return id + "@gmail.com>";
 	}
 
-	std::string CreateBoundary(const Date& date){
+	static std::string CreateBoundary(const Date& date){
 		// Output the current time
 		std::string id = "";
 		id = "------------";
@@ -104,7 +104,7 @@ namespace SMTP {
 		socket->Send("User-Agent: C++ Client");
 		socket->Send("Content-Langaue: en-US");
 		socket->Send(FMT::format("To: {}", AddressListToString(mail.Tos)));
-		socket->Send(FMT::format("From: <{}>", mail.Sender));
+		socket->Send(FMT::format("From: {}", mail.Sender));
 		socket->Send(FMT::format("Cc: {}", AddressListToString(mail.Ccs)));
 		socket->Send(FMT::format("Subject: {}", mail.Subject));
 		
@@ -141,6 +141,16 @@ namespace SMTP {
 		socket->Send(".");
 		socket->Receive();
 		return true;
+	}
+
+	void EndSession(Ref<Socket> socket) {
+		if (!socket->IsConnected()) {
+			__ERROR("Socket is not connected, can not send the email!");
+			return;
+		}
+
+		socket->Send("QUIT");
+		socket->Receive();
 	}
 
 }
