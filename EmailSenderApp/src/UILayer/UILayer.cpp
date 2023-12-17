@@ -183,12 +183,12 @@ void UILayer::OnAttach()
 		TextPrinter::Print("Folders in your account: \n");
 		m_MailContainer->LoadMails();
 		const auto& folders = m_MailContainer->GetRetrievedMails();
-
+		const auto& no_sorted_folders = m_MailContainer->GetAddedFolder();
 		int i = 1;
 		std::vector<std::string> folder_names;
-		for (const auto& folder_mails : folders) {
-			TextPrinter::Print("{}. {}\n", Blue, i, folder_mails.first);
-			folder_names.push_back(folder_mails.first);
+		for (const auto& folder_mails : no_sorted_folders) {
+			TextPrinter::Print("{}. {}\n", Blue, i, folder_mails);
+			folder_names.push_back(folder_mails);
 			i++;
 		}
 		std::string choice = GetUserInput("Select a folder ('m': return to Menu): ", Blue, [&](const std::string& inp) -> bool {
@@ -282,7 +282,7 @@ void UILayer::OnAttach()
 			TextPrinter::Print("Successful moving!\n", Yellow);
 		}
 		else {
-			TextPrinter::Print("Can't move mail!");
+			TextPrinter::Print("Can't move mail!\n");
 		}
 
 		std::string choice = GetUserInput("'m' to return Menu, 'd' to return to folders or 'mails' to return to Mail List: ", { "m", "d", "mails" }, Blue);
