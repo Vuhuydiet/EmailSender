@@ -22,6 +22,6 @@ private:
 
 	Ref<Library> m_MailContainer = nullptr;
 private:
-	Ref<Menu> m_Start, m_Login, m_Menu, m_SendMail, m_End, m_ShowFolders, m_ShowMails, m_DisplayMail, m_InputSavingFilePath;
+	Ref<Menu> m_Start, m_Login, m_Menu, m_SendMail, m_End, m_ShowFolders, m_ShowMails, m_DisplayMail, m_MoveMail, m_InputSavingFilePath;
 	Ref<Menu> m_CurrentMenu;
 };
