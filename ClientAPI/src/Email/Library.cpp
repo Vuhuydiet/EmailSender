@@ -43,6 +43,7 @@ bool Library::MoveMail(const std::string& folder_name, const std::string& id, co
 
 	auto& destination_folder = GetRefRetrievedMails(destination_folder_name);
 	destination_folder.push_back(mail_temp);
+	return true;
 }
 
 Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, const std::vector<FilterType>& filters) {
@@ -98,6 +99,14 @@ void Library::SetDefaultFolder(const std::string& name) {
 
 void Library::CreateFolder(const std::string& folder) {
 	m_RetrievedMails.push_back(std::make_pair(folder, std::vector<Ref<RetrievedMail>>()));
+}
+
+bool Library::HasFolder(const std::string& name) const {
+	for (const auto& folder : m_RetrievedMails) {
+		if (folder.first == name)
+			return true;
+	}
+	return false;
 }
 
 const std::vector<Ref<RetrievedMail>>& Library::GetRetrievedMails(const std::string& folder_name) const {

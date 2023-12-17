@@ -16,6 +16,7 @@ public:
 	bool MoveMail(const std::string& folder_name, const std::string& id, const std::string& destination_folder);
 
 	void CreateFolder(const std::string& folder);
+	bool HasFolder(const std::string& folder) const;
 	void SetDefaultFolder(const std::string& name);
 
 	const std::set<std::string>& GetAddedMails() const { return m_AddedMails; }

@@ -21,7 +21,7 @@ public:
 	RetrievedMail& operator=(const RetrievedMail& other) = default;
 
 	std::string ToString() const;
-	void SaveFile(const std::string& file_name, const std::filesystem::path& path) const;
+	void SaveFile(const std::string& file_name, const std::filesystem::path& dir) const;
 public:
 	std::string Sender;
 	std::vector<std::string> Tos;

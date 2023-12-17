@@ -138,11 +138,11 @@ std::string RetrievedMail::ToString() const {
 	return res;
 }
 
-void RetrievedMail::SaveFile(const std::string& file_name, const std::filesystem::path& path) const {
-	std::ofstream fo(path / file_name, std::ios::binary);
+void RetrievedMail::SaveFile(const std::string& file_name, const std::filesystem::path& dir) const {
+	std::ofstream fo(dir / file_name, std::ios::binary);
 
 	if (!fo.is_open()) {
-		__ERROR("Can't open ", path, "\n");
+		__ERROR("Can't open {}\n", dir);
 		return;
 	}
 

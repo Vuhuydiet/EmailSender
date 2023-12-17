@@ -21,10 +21,10 @@ namespace YAML {
 
 		static bool decode(const Node& node, std::set<std::string>& rhs)
 		{
-			if (!node.IsSequence() || node.size() != 3)
+			if (!node.IsSequence())
 				return false;
-			for (int i = 0; i < node.size(); i++) {
-				rhs.insert(node[i].as<std::string>());
+			for (auto& item : node) {
+				rhs.insert(item.as<std::string>());
 			}
 			return true;
 		}
