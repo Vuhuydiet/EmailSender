@@ -18,15 +18,15 @@ void UILayer::OnAttach()
 	auto& config = Config::Get();
 
 	m_Start					= CreateRef<Menu>("Start", false);
-	m_Login					= CreateRef<Menu>("Login", false);
-	m_Menu					= CreateRef<Menu>("Menu", false);
+	m_Login					= CreateRef<Menu>("Login", true);
+	m_Menu					= CreateRef<Menu>("Menu", true);
 	m_SendMail				= CreateRef<Menu>("SendMail", false);
 	m_End					= CreateRef<Menu>("End", false);
-	m_ShowFolders			= CreateRef<Menu>("ShowFolder", false);
-	m_ShowMails				= CreateRef<Menu>("ShowMails", false);
-	m_DisplayMail			= CreateRef<Menu>("DisplayMails", false);
-	m_MoveMail				= CreateRef<Menu>("MoveMail", false);
-	m_InputSavingFilePath	= CreateRef<Menu>("InputSavingPath", false);
+	m_ShowFolders			= CreateRef<Menu>("ShowFolder", true);
+	m_ShowMails				= CreateRef<Menu>("ShowMails", true);
+	m_DisplayMail			= CreateRef<Menu>("DisplayMails", true);
+	m_MoveMail				= CreateRef<Menu>("MoveMail", true);
+	m_InputSavingFilePath	= CreateRef<Menu>("InputSavingPath", true);
 
 	m_CurrentMenu = m_Start;
 
@@ -207,7 +207,7 @@ void UILayer::OnAttach()
 			TextPrinter::Print("{}. {}\n", Blue, i, folder_name);
 			i++;
 		}
-		std::string choice = GetUserInput("Select a folder ('m': return to Menu): ", Blue, [&](const std::string& inp) -> bool {
+		std::string choice = GetUserInput("Press 'm': return to Menu\nSelect a folder: ", Yellow, [&](const std::string& inp) -> bool {
 			return inp == "m" || IsNumberFromTo(inp, 1, i - 1);
 		});
 		
@@ -238,12 +238,12 @@ void UILayer::OnAttach()
 		
 		std::string choice = "m";
 		if (!mails.empty()) {
-			choice = GetUserInput("Select an email ('m' to Menu, 'd' to show folders): ", Blue, [&](const std::string& inp) {
+			choice = GetUserInput("Select an email ('m' to Menu, 'd' to show folders): ", Yellow, [&](const std::string& inp) {
 				return inp == "m" || inp == "d" || IsNumberFromTo(inp, 1, i - 1);
 			});
 		}
 		else {
-			choice = GetUserInput("'m': return to Menu\n'd': show folders\n", { "m", "d" }, Blue);
+			choice = GetUserInput("Press 'm': return to Menu\n'd': show folders\n", { "m", "d" }, Yellow);
 		}
 
 		if (choice == "m") {
@@ -255,7 +255,7 @@ void UILayer::OnAttach()
 		else {
 			s_shown_mail = mails[std::stoi(choice) - 1];
 
-			choice = GetUserInput("Enter 'mv' to move mail and 'dp' to display mail: ", { "move", "dp" }, Blue);
+			choice = GetUserInput("Enter 'mv' to move mail and 'dp' to display mail: ", { "move", "dp" }, Yellow);
 			if (choice == "dp") {
 				m_ShowMails->next = m_DisplayMail;
 			}
@@ -272,13 +272,13 @@ void UILayer::OnAttach()
 		TextPrinter::Print("{}\n\n", White, s_shown_mail->ToString());
 
 		if (!s_shown_mail->AttachedFiles.empty() && 
-			GetUserInput("Do you want to download the attached files? (y/n): ", { "y", "n" }, Blue) == "y") 
+			GetUserInput("Do you want to download the attached files? (y/n): ", { "y", "n" }, Yellow) == "y") 
 		{
 			m_DisplayMail->next = m_InputSavingFilePath;
 			return;
 		}
 
-		std::string choice = GetUserInput("'m' to return Menu or 'mails' to return to Mail List: ", { "m", "mails" }, Blue);
+		std::string choice = GetUserInput("'m' to return Menu or 'mails' to return to Mail List: ", { "m", "mails" }, Yellow);
 		if (choice == "m")
 			m_DisplayMail->next = m_Menu;
 		else
@@ -299,7 +299,7 @@ void UILayer::OnAttach()
 			TextPrinter::Print("Can't move mail!\n");
 		}
 
-		std::string choice = GetUserInput("'m' to return Menu, 'd' to return to folders or 'mails' to return to Mail List: ", { "m", "d", "mails" }, Blue);
+		std::string choice = GetUserInput("'m' to return Menu, 'd' to return to folders or 'mails' to return to Mail List: ", { "m", "d", "mails" }, Yellow);
 		if (choice == "m")
 			m_MoveMail->next = m_Menu;
 		else if (choice == "d")
@@ -313,28 +313,28 @@ void UILayer::OnAttach()
 			return std::filesystem::is_directory(inp);
 		});
 
-		std::string downloaded_mail = GetUserInput("Enter order number of mail you want to download or 'a' to download all: ", Blue);
+		std::string downloaded_files = GetUserInput("Enter order number of file you want to download or 'a' to download all: ", Yellow);
 
-		if (downloaded_mail == "a") {
+		if (downloaded_files == "a") {
+			TextPrinter::Print("Downloading files...\n", Green);
 			for (auto& file : s_shown_mail->AttachedFiles) {
 				s_shown_mail->SaveFile(file.FileName, choice);
 			}
-			TextPrinter::Print("Downloading files...\n", Green);
 			TextPrinter::Print("Download successfully!\n", Yellow);
 		}
 		else {
 			const auto& selected_folder = m_MailContainer->GetRetrievedMails(s_shown_folder);
-			if (std::stoi(downloaded_mail) >= 1 && std::stoi(downloaded_mail) <= selected_folder.size()) {
-				s_shown_mail->SaveFile(s_shown_mail->AttachedFiles[std::stoi(downloaded_mail)-1].FileName, choice);
-				TextPrinter::Print("Downloading mail...\n", Green);
+			if (std::stoi(downloaded_files) >= 1 && std::stoi(downloaded_files) <= selected_folder.size()) {
+				TextPrinter::Print("Downloading file...\n", Green);
+				s_shown_mail->SaveFile(s_shown_mail->AttachedFiles[std::stoi(downloaded_files)-1].FileName, choice);
 				TextPrinter::Print("Successful download!\n", Yellow);
 			}
 			else {
-				TextPrinter::Print("Wrong order number of mail!");
+				TextPrinter::Print("Wrong order number of file!");
 			}
 		}
 
-		choice = GetUserInput("'m' to return Menu or 'mails' to return to Mail List: ", { "m", "mails" }, Blue);
+		choice = GetUserInput("'m' to return Menu or 'mails' to return to Mail List: ", { "m", "mails" }, Yellow);
 		if (choice == "m")
 			m_InputSavingFilePath->next = m_Menu;
 		else
