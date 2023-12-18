@@ -1,7 +1,7 @@
 #pragma once
 
-#include "RetrievedMail.h"
-#include "FilterConfig.h"
+
+#include <filesystem>
 #include <yaml-cpp/yaml.h>
 
 #include "RetrievedMail.h"
@@ -18,6 +18,7 @@ public:
 	bool MoveMail(const std::string& folder_name, const std::string& id, const std::string& destination_folder);
 
 	void CreateFolder(const std::string& folder);
+	void SetDefaultFolder(const std::string& name);
 
 	const std::set<std::string>& GetAddedMails() const { return m_AddedMails; }
 	const std::vector<Ref<RetrievedMail>>& GetRetrievedMails(const std::string& folder_name) const;
@@ -29,6 +30,8 @@ public:
 private:
 	Ref<RetrievedMail> AddNewMail(const std::filesystem::path& msg_path, const MailFilter& filter, const std::vector<FilterType>& filters = { FilterType::From, FilterType::Subject, FilterType::Content });
 private:
+	std::string m_DefaultFolder = "Default";
+
 	std::map<std::string, std::vector<Ref<RetrievedMail>>> m_RetrievedMails;
 	std::vector<std::string> m_FolderAddedOrders;
 	std::set<std::string> m_AddedMails;

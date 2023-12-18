@@ -163,7 +163,8 @@ private:
     clock_t _start, _end;
     clock_t _debug_time = 0;
 
-} __printer;
+};
+inline __Printer __printer;
 
 // ------------------------------------------------------------------------------- //
 
@@ -182,7 +183,7 @@ __Printer& __printArr(const T& a, int n, const char* name, int line) {
 }
 
 template <typename T>
-__Printer& __printMat(const T& a, int n, int m, const char* name, int line) {
+inline __Printer& __printMat(const T& a, int n, int m, const char* name, int line) {
     __printer._set_space(-1);
     __printer << "[" << line << "] " << name << ": {\n";
 
@@ -202,7 +203,7 @@ __Printer& __printMat(const T& a, int n, int m, const char* name, int line) {
 }
 
 template <typename T>
-__Printer& __print(const T& t, const char* name, int line) {
+inline __Printer& __print(const T& t, const char* name, int line) {
     __printer._set_space(-1);
     __printer << "[" << line << "] " << name << ": " << t;
     __printer._set_space();
@@ -210,7 +211,7 @@ __Printer& __print(const T& t, const char* name, int line) {
 }
 
 template <typename T>
-__Printer& __println(const T& t, const char* name, int line) {
+inline __Printer& __println(const T& t, const char* name, int line) {
     __printer._set_space(-1);
     __print(t, name, line);
     __printer << "\n";
@@ -218,9 +219,9 @@ __Printer& __println(const T& t, const char* name, int line) {
     return __printer;
 }
 
-__Printer& __ldb_helper(int line) {
+inline __Printer& __ldb_helper(const char* file, int line) {
     __printer._set_space(-1);
-    __printer << "[" << line << "] ";
+    __printer << "[" << file << "] [" << line << "] ";
     __printer._set_space();
     return __printer;
 }
@@ -234,5 +235,5 @@ __Printer& __ldb_helper(int line) {
 #define __println(x)            __println(x, #x, __LINE__)
 
 #define __db                    __printer
-#define __ldb                   __ldb_helper(__LINE__)
+#define __ldb                   __ldb_helper(__FILE__, __LINE__)
 #define __flag                  __ldb << "[Flag!]\n"

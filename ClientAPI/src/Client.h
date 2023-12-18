@@ -15,3 +15,5 @@
 
 #include "Platform/SMTP/SMTP.h"
 #include "Platform/POP3/POP3.h"
+
+#include "Debug/Debug.h"

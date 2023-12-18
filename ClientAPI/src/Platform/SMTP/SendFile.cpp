@@ -2,27 +2,11 @@
 #include "SMTP.h"
 #include "Base64/Base64.h"
 
-#define _mB 1000000
-static const int MAX_FILE_SIZE = 3*_mB; // size of file limit by 3MB
-
 namespace SMTP {
-    std::streampos getFileSize(const std::filesystem::path& filePath) {
-        if (!std::filesystem::exists(filePath)) {
-            __ERROR("Failed to open the file");
-            return -1;
-        }
-        std::ifstream file(filePath, std::ios::binary | std::ios::ate);
-        return file.tellg();
-    }
 
     void SendFile(Ref<Socket> socket, const std::filesystem::path& filePath) {
         if (!std::filesystem::exists(filePath)) {
             __ERROR("Failed to open the file");
-            return;
-        }
-
-        if (getFileSize(filePath) > MAX_FILE_SIZE) {
-            __ERROR("FILE TOO LARGE");
             return;
         }
 

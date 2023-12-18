@@ -50,6 +50,10 @@ Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, co
 	for (const auto& folder : filtered_folders) {
 		m_RetrievedMails[folder].push_back(retrieved_mail_ref);
 	}
+		m_RetrievedMails[folder].push_back(retrieved_mail);
+	}
+	if (filtered_folders.empty())
+		m_RetrievedMails[m_DefaultFolder].push_back(retrieved_mail);
 
 	m_AddedMails.insert(retrieved_mail->Id);
 	SetReadStatus(retrieved_mail->Id, false);
