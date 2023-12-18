@@ -1,0 +1,8 @@
+Mail Server: 127.0.0.1
+SMTP port: 2500
+POP3 port: 1100
+Autoload: 10
+Max Sent File Size: 3
+Logged In: true
+Username: ta
+Password: 123

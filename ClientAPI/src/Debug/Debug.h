@@ -229,6 +229,8 @@ inline __Printer& __ldb_helper(const char* file, int line) {
 
 // ------------- API -------------------------------------------------- //
 
+#ifdef _DEBUG
+
 #define __printArr(x, n)        __printArr(x, n, #x, __LINE__)
 #define __printMat(x, n, m)     __printMat(x, n, m, #x, __LINE__)
 #define __print(x)              __print(x, #x, __LINE__)
@@ -237,3 +239,16 @@ inline __Printer& __ldb_helper(const char* file, int line) {
 #define __db                    __printer
 #define __ldb                   __ldb_helper(__FILE__, __LINE__)
 #define __flag                  __ldb << "[Flag!]\n"
+
+#else
+
+#define __printArr(...)
+#define __printMat(...)
+#define __print(...)
+#define __println(...)
+
+#define __db
+#define __ldb
+#define __flag
+
+#endif

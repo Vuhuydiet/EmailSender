@@ -9,8 +9,9 @@
 #define _YES 1
 #define _NO  0
 
-#define _MAIL_FILTER_CONFIG_YML		"MailFilterConfig.yml"
-#define _MAILBOX_CONFIG_YML			"MailboxConfig.yml"
+#define _MAIL_FILTER_CONFIG_YML			"MailFilterConfig.yml"
+#define _DEFAULT_MAIL_FILTER_CONFIG_YML "DefaultMailFilterConfig.yml"
+#define _MAILBOX_CONFIG_YML				"MailboxConfig.yml"
 
 void UILayer::OnAttach() 
 {
@@ -73,12 +74,10 @@ void UILayer::OnAttach()
 
 		m_MailFilter = CreateRef<MailFilter>();
 		// TODO: add default config
-		if (std::filesystem::exists(user_mailbox_dir / _MAIL_FILTER_CONFIG_YML)) {
+		if (std::filesystem::exists(user_mailbox_dir / _MAIL_FILTER_CONFIG_YML))
 			m_MailFilter->Load(user_mailbox_dir / _MAIL_FILTER_CONFIG_YML);
-		}
-		else {
-
-		}
+		else
+			m_MailFilter->Load(_DEFAULT_CONFIG_DIR / _DEFAULT_MAIL_FILTER_CONFIG_YML);
 
 		m_MailContainer = CreateRef<Library>(user_mailbox_dir);
 		if (std::filesystem::exists(user_mailbox_dir / _MAILBOX_CONFIG_YML)) {

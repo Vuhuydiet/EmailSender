@@ -2,6 +2,8 @@
 # Directories
 bin/
 bin-int/
+EmailSenderApp/MSG/
+EmailSenderApp/assets/
 
 # Visual Studio files and folder
 .vs/
@@ -17,7 +19,6 @@ bin-int/
 **.log
 **.msg
 **.txt
-**.yml
 
 # images
 **.png

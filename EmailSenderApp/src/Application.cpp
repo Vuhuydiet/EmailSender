@@ -10,7 +10,7 @@
 class EmailSender : public Application 
 {
 public:
-	EmailSender() 
+	EmailSender()
 	{
 		CreateDirsIfNotExist({ _DEFAULT_HOST_MAILBOX_DIR, _DEFAULT_CONFIG_DIR });
 

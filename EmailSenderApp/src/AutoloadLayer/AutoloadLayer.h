@@ -10,5 +10,5 @@ public:
 
 private:
 	Ref<Socket> m_Socket = nullptr;
-	float m_TimeCounter = 0.0f;
+	float m_TimeCounter = FLT_MAX;
 };
