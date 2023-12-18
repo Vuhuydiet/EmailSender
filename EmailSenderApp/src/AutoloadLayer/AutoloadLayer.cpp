@@ -7,9 +7,7 @@
 void AutoloadLayer::OnUpdate(float dt) {
 	m_TimeCounter += dt;
 	
-	auto& config = Config::Get();
-	config.Load();
-	ReloadConfigAttributes();
+	const auto& config = Config::Get();
 
 	if (m_TimeCounter < m_AutoloadDelay || !config.IsLoggedIn())
 		return;

@@ -1,7 +1,7 @@
 #include "pch.h"
 #include "WS2Socket.h"
 
-#define _MAX_SIZE_PER_SEND			72
+#define _MAX_SIZE_PER_SEND			(72)
 #define _MAX_SIZE_PER_RECEIVE		(1LL << 20) // 3MB
 
 #define _RECEIVE_ERROR				"##_receive_error"
@@ -104,6 +104,7 @@ void WS2Socket::Send(const std::string& msg)
 		if (iResult == SOCKET_ERROR) {
 			__ERROR("Send failed : {0}", WSAGetLastError());
 			Delete();
+			__debugbreak();
 			break;
 		}
 	}

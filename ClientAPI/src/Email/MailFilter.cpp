@@ -30,6 +30,7 @@ void MailFilter::Load(const std::filesystem::path& path)
 			(*written_filter)[folder_name] = keys;
 		}
 	}
+
 }
 
 static void SerializeFilter(YAML::Emitter& out, const std::map<std::string, std::set<std::string>>& filter, const std::string& type) {
