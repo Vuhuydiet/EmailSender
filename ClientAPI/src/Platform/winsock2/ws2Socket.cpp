@@ -98,7 +98,7 @@ void WS2Socket::Send(const std::string& msg)
 
 	std::string formatted_msg = msg + "\r\n";
 	for (int i = 0; i < formatted_msg.size(); i += _MAX_SIZE_PER_SEND) {
-		std::string sent_string = formatted_msg.substr(i, min(formatted_msg.size() - i, _MAX_SIZE_PER_SEND));
+		std::string sent_string = formatted_msg.substr(i, _MAX_SIZE_PER_SEND);
 		int iResult = send(m_SocketDescriptor, sent_string.c_str(), (int)sent_string.size() * sizeof(char), 0);
 		
 		if (iResult == SOCKET_ERROR) {
