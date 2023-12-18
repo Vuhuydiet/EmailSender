@@ -3,7 +3,7 @@
 bin/
 bin-int/
 EmailSenderApp/MSG/
-EmailSenderApp/assets
+EmailSenderApp/assets/
 
 # Visual Studio files and folder
 .vs/
