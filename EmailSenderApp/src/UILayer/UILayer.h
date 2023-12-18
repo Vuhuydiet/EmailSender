@@ -17,11 +17,13 @@ private:
 	std::string GetUserInput(const std::string& notify, TextColor color, Fn condition, Args ... args) const;
 	std::string GetUserInput(const std::string& notify, const std::set<std::string>& valid_selections, TextColor color = TextColor::Blue) const;
 
+	void SaveConfigFiles() const;
 private:
 	Ref<Socket> m_Socket;
 
 	Ref<Library> m_MailContainer = nullptr;
+	Ref<MailFilter> m_MailFilter = nullptr;
 private:
-	Ref<Menu> m_Start, m_Login, m_Menu, m_SendMail, m_End, m_ShowFolders, m_ShowMails, m_DisplayMail, m_InputSavingFilePath;
+	Ref<Menu> m_Start, m_Login, m_Menu, m_SendMail, m_End, m_ShowFolders, m_ShowMails, m_DisplayMail, m_InputSavingFilePath, m_MoveMail;
 	Ref<Menu> m_CurrentMenu;
 };

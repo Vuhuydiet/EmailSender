@@ -4,6 +4,9 @@
 #include <mutex>
 #include <yaml-cpp/yaml.h>
 
+#define _MB_to_B(x) (x << 20)
+#define _B_to_MB(x) (x >> 20)
+
 static std::mutex s_LoadMutex;
 static std::mutex s_SaveMutex;
 
@@ -22,7 +25,8 @@ void Config::Load() {
 	m_SMTP_port = data["SMTP port"].as<int>();
 	m_POP3_port = data["POP3 port"].as<int>();
 	m_Autoload = data["Autoload"].as<float>();
-	m_MaxSentFileSize = data["Max Sent File Size"].as<size_t>();
+	size_t size = data["Max Sent File Size"].as<size_t>();
+	m_MaxSentFileSize = _MB_to_B(size);
 
 	m_IsLoggedIn = data["Logged In"].as<bool>();
 	m_Username = data["Username"].as<std::string>();
@@ -38,7 +42,7 @@ void Config::Save() {
 	out << YAML::Key << "SMTP port" << YAML::Value << m_SMTP_port;
 	out << YAML::Key << "POP3 port" << YAML::Value << m_POP3_port;
 	out << YAML::Key << "Autoload" << YAML::Value << m_Autoload;
-	out << YAML::Key << "Max Sent File Size" << YAML::Value << m_MaxSentFileSize;
+	out << YAML::Key << "Max Sent File Size" << YAML::Value << _B_to_MB(m_MaxSentFileSize);
 
 	out << YAML::Key << "Logged In" << YAML::Value << m_IsLoggedIn;
 	out << YAML::Key << "Username" << YAML::Value << m_Username;

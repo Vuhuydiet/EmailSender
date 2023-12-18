@@ -16,8 +16,8 @@ template <typename T>
 using Ref = std::shared_ptr<T>;
 
 template <typename T, typename ... Args>
-constexpr Ref<T> CreateRef(Args&&... args) {
-	return std::make_shared<T>(std::forward<Args>(args)...);
+constexpr Ref<T> CreateRef(Args... args) {
+	return std::make_shared<T>(args...);
 }
 
 #define _found(ds, key) (ds.find(key) != ds.end())
