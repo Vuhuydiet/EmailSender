@@ -48,8 +48,6 @@ Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, co
 	std::vector<std::string> filtered_folders = filter.FilterMail(retrieved_mail, filters);
 
 	for (const auto& folder : filtered_folders) {
-		m_RetrievedMails[folder].push_back(retrieved_mail_ref);
-	}
 		m_RetrievedMails[folder].push_back(retrieved_mail);
 	}
 	if (filtered_folders.empty())

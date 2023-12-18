@@ -14,7 +14,8 @@ enum class FilterType {
 
 class MailFilter {
 public:
-	FilterConfig(const std::filesystem::path& filter_config_file_path);
+
+	void Load(const std::filesystem::path& filter_config_file_path);
 	void Save(const std::filesystem::path& filter_config_file_path) const;
 
 	void AddKeyword(std::string keyword, std::string folder_name, FilterType type);

@@ -6,10 +6,8 @@
 
 void MailFilter::Load(const std::filesystem::path& path)
 {
-	if (!std::filesystem::exists(path)) {
-		Save(path);
+	if (!std::filesystem::exists(path))
 		return;
-	}
 
 	YAML::Node data = YAML::LoadFile(path.string());
 

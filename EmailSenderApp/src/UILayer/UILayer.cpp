@@ -14,11 +14,7 @@
 
 void UILayer::OnAttach() 
 {
-	CreateDirsIfNotExist({ _DEFAULT_HOST_MAILBOX_DIR, _DEFAULT_CONFIG_DIR });
-
 	auto& config = Config::Get();
-	config.Init(_DEFAULT_APP_CONFIG_FILEPATH);
-	config.Load();
 
 	m_Start					= CreateRef<Menu>("Start", false);
 	m_Login					= CreateRef<Menu>("Login", false);

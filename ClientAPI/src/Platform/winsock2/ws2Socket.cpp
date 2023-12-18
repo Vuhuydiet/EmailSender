@@ -102,7 +102,8 @@ void WS2Socket::Send(const std::string& msg)
 		int iResult = send(m_SocketDescriptor, sent_string.c_str(), (int)sent_string.size() * sizeof(char), 0);
 		
 		if (iResult == SOCKET_ERROR) {
-			__ERROR("Send failed : {0}", WSAGetLastError());
+			int error_num = WSAGetLastError();
+			__ERROR("Send failed : {0}", error_num);
 			Delete();
 			__debugbreak();
 			break;
