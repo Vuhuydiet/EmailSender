@@ -2,7 +2,21 @@ Mail Server: 127.0.0.1
 SMTP port: 2500
 POP3 port: 1100
 Autoload: 10
+<<<<<<< Updated upstream
 Max Sent File Size: 3145728
 Logged In: false
 Username: ""
 Password: ""
+=======
+<<<<<<< Updated upstream
+Max Sent File Size: 3145728
+Logged In: false
+Username: ""
+Password: ""
+=======
+Max Sent File Size: 3
+Logged In: true
+Username: nqt@gmail.com
+Password: fsadf
+>>>>>>> Stashed changes
+>>>>>>> Stashed changes
