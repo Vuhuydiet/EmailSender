@@ -2,7 +2,7 @@
 
 #include <string>
 #include <filesystem>
-
+#include <sstream>
 inline bool IsNumber(const std::string& s) {
 	return !s.empty() && std::find_if(s.begin(), s.end(), [](unsigned char c) { return !std::isdigit(c); }) == s.end();
 }
@@ -23,7 +23,7 @@ inline bool ContainsOnly(const std::string& s, const std::string& char_set) {
 }
 
 inline void RemoveChar(std::string& str, char c) {
-	str.erase(std::remove_if(str.begin(), str.end(), [](char c) -> bool { return c == '\r'; }), str.end());
+	str.erase(std::remove_if(str.begin(), str.end(), [c](char cc) -> bool { return cc == c; }), str.end());
 }
 
 inline std::vector<std::string> Split(const std::string& str, char c) {

@@ -91,8 +91,8 @@ void MailFilter::Save(const std::filesystem::path& path) const {
 	fout.close();
 }
 
-std::vector<std::string> MailFilter::FilterMail(Ref<RetrievedMail> retrieved_mail, const std::vector<FilterType>& filter_types) const {
-	std::vector<std::string> ret;
+std::set<std::string> MailFilter::FilterMail(Ref<RetrievedMail> retrieved_mail, const std::vector<FilterType>& filter_types) const {
+	std::set<std::string> ret;
 	for (const auto& type : filter_types) {
 		switch (type)
 		{
@@ -121,27 +121,30 @@ void MailFilter::AddKeyword(std::string keyword, std::string folder_name, Filter
 		m_Content[folder_name].insert(keyword);
 }
 
-void MailFilter::FilterMailByFrom(Ref<RetrievedMail> retrieved_mail, std::vector<std::string>& dst_folder) const {
+void MailFilter::FilterMailByFrom(Ref<RetrievedMail> retrieved_mail, std::set<std::string>& dst_folder) const {
 	for (const auto& folder_keywords : m_From) {
 		if (_found(folder_keywords.second, retrieved_mail->Sender)) {
-			dst_folder.push_back(folder_keywords.first);
+			dst_folder.insert(folder_keywords.first);
 		}
 	}
 }
 
-void MailFilter::FilterMailBySubject(Ref<RetrievedMail> retrieved_mail, std::vector<std::string>& dst_folder) const {
+void MailFilter::FilterMailBySubject(Ref<RetrievedMail> retrieved_mail, std::set<std::string>& dst_folder) const {
 	for (const auto& folder_keywords : m_Subject) {
-		if (_found(folder_keywords.second, retrieved_mail->Subject)) {
-			dst_folder.push_back(folder_keywords.first);
+		for (const auto& keyword : folder_keywords.second) {
+			if (retrieved_mail->Subject.find(keyword) != std::string::npos) {
+				dst_folder.insert(folder_keywords.first);
+				break;
+			}
 		}
 	}
 }
 
-void MailFilter::FilterMailByContent(Ref<RetrievedMail> retrieved_mail, std::vector<std::string>& dst_folder) const {
+void MailFilter::FilterMailByContent(Ref<RetrievedMail> retrieved_mail, std::set<std::string>& dst_folder) const {
 	for (const auto& folder_keywords : m_Content) {
 		for (const auto& keyword : folder_keywords.second) {
 			if (retrieved_mail->Content.find(keyword) != std::string::npos) {
-				dst_folder.push_back(folder_keywords.first);
+				dst_folder.insert(folder_keywords.first);
 				break;
 			}
 		}

@@ -39,7 +39,7 @@ std::string Add_NL_Helper(const std::string& str);
 		#define __CRITICAL(x, ...)		::Log::GetClientLogger()->critical(Add_NL_Helper(x), __VA_ARGS__)	
 	#endif
 #else
-	#if defined(LIB)
+	#if defined(_LIB)
 		#define __TRACE(...)	
 		#define __DEBUG(...)
 		#define __INFO(...)		
