@@ -18,15 +18,15 @@ void UILayer::OnAttach()
 	auto& config = Config::Get();
 
 	m_Start					= CreateRef<Menu>("Start", false);
-	m_Login					= CreateRef<Menu>("Login", true);
+	m_Login					= CreateRef<Menu>("Login", false);
 	m_Menu					= CreateRef<Menu>("Menu", true);
 	m_SendMail				= CreateRef<Menu>("SendMail", false);
 	m_End					= CreateRef<Menu>("End", false);
-	m_ShowFolders			= CreateRef<Menu>("ShowFolder", true);
+	m_ShowFolders			= CreateRef<Menu>("ShowFolder", false);
 	m_ShowMails				= CreateRef<Menu>("ShowMails", true);
-	m_DisplayMail			= CreateRef<Menu>("DisplayMails", true);
+	m_DisplayMail			= CreateRef<Menu>("DisplayMails", false);
 	m_MoveMail				= CreateRef<Menu>("MoveMail", true);
-	m_InputSavingFilePath	= CreateRef<Menu>("InputSavingPath", true);
+	m_InputSavingFilePath	= CreateRef<Menu>("InputSavingPath", false);
 
 	m_CurrentMenu = m_Start;
 
@@ -255,7 +255,7 @@ void UILayer::OnAttach()
 		else {
 			s_shown_mail = mails[std::stoi(choice) - 1];
 
-			choice = GetUserInput("Enter 'mv' to move mail and 'dp' to display mail: ", { "move", "dp" }, Yellow);
+			choice = GetUserInput("Enter 'move' to move mail and 'dp' to display mail: ", { "move", "dp" }, Yellow);
 			if (choice == "dp") {
 				m_ShowMails->next = m_DisplayMail;
 			}
@@ -310,9 +310,10 @@ void UILayer::OnAttach()
 
 	m_InputSavingFilePath->SetFunction([&]() {
 		std::string choice = GetUserInput("Input download folder path: ", Blue, [](const std::string& inp) {
-			return std::filesystem::is_directory(inp);
+			return inp.empty() || std::filesystem::is_directory(inp);
 		});
-
+		if (choice.empty()) 
+			choice = "Downloads:/";
 		std::string downloaded_files = GetUserInput("Enter order number of file you want to download or 'a' to download all: ", Yellow);
 
 		if (downloaded_files == "a") {
