@@ -45,7 +45,7 @@ bool Library::MoveMail(const std::string& folder_name, const std::string& id, co
 
 Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, const MailFilter& filter, const std::vector<FilterType>& filters) {
 	Ref<RetrievedMail> retrieved_mail = CreateRef<RetrievedMail>(msg_path);
-	std::vector<std::string> filtered_folders = filter.FilterMail(retrieved_mail, filters);
+	std::set<std::string> filtered_folders = filter.FilterMail(retrieved_mail, filters);
 
 	for (const auto& folder : filtered_folders) {
 		m_RetrievedMails[folder].push_back(retrieved_mail);

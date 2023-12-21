@@ -2,6 +2,7 @@
 #include "RetrievedMail.h"
 #include "Base64/Base64.h"
 #include "Core/Format.h"
+#include "Utils/Utils.h"
 
 
 static std::string FindBoundary(const std::string& first_line) {
@@ -33,18 +34,14 @@ RetrievedMail::RetrievedMail(const std::filesystem::path& msg_path) {
 
 		if (line.find("To: ") != std::string::npos) {
 			line = line.substr(line.find(" ") + 1);
-			while (!line.empty()) {
-				Tos.push_back(line.substr(0, line.find(" ")));
-				line.erase(0, Tos.back().size());
-			}
+			RemoveChar(line, ' ');
+			Tos = Split(line, ',');
 		}
 
 		if (line.find("Cc: ") != std::string::npos) {
 			line = line.substr(line.find(" ") + 1);
-			while (!line.empty()) {
-				Ccs.push_back(line.substr(0, line.find(" ")));
-				line.erase(0, Ccs.back().size());
-			}
+			RemoveChar(line, ' ');
+			Ccs = Split(line, ',');
 		}
 
 		if (line.find("Subject: ") != std::string::npos) {
