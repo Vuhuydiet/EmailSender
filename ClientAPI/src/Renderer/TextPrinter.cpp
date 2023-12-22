@@ -13,3 +13,9 @@ void TextPrinter::Init()
 	s_Printer->set_pattern("%^%v%$");
 }
 
+void TextPrinter::Shutdown()
+{
+	s_Printer->flush();
+	s_Printer.reset();
+}
+

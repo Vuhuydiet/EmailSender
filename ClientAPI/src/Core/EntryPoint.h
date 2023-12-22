@@ -10,15 +10,22 @@ int main(int argc, char** argv)
 {
 	Log::Init();
 	__INFO("Initialised Log!");
+	TextPrinter::Init();
 
-	Application* app = CreateApplication();
-	__INFO("Application Created Successfully!");
+	bool isRestart = false;
+	do {
+		Application* app = CreateApplication();
+		__INFO("Application Created Successfully!");
 
-	app->Run();
+		app->Run();
 
-	delete app;
-	app = nullptr;
-	__INFO("Close Application!\n");
+		isRestart = app->IsRestart();
+
+		delete app;
+		__INFO("Application Closed!");
+	} while (isRestart);
+	
+	__INFO("End of Program!");
 
 	return 0;
 }

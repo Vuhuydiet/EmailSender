@@ -5,6 +5,8 @@
 
 enum TextColor { White, Blue, Green, Yellow, Red, RedWhite };
 
+int main(int argc, char** argv);
+
 class TextPrinter {
 public:
 	template <typename ... Args>
@@ -12,7 +14,8 @@ public:
 
 private:
 	static void Init();
-	friend class Application;
+	static void Shutdown();
+	friend int ::main(int argc, char** argv);
 private:
 	static std::shared_ptr<spdlog::logger> s_Printer;
 };

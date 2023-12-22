@@ -24,6 +24,12 @@ public:
 			system("CLS");
 	}
 
+	static void Clear() {
+		system("CLS");
+	}
+
+	void SetAutoClear(bool clear) { m_AutoClearScreen = clear; }
+
 public:
 	Ref<Menu> next = nullptr;
 private:

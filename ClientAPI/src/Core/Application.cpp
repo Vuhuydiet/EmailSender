@@ -13,7 +13,6 @@ Application::Application()
 	ASSERT(!s_Instance, "Already have an instance for Application class!\n");
 	s_Instance = this;
 
-	TextPrinter::Init();
 	Socket::Init();
 }
 

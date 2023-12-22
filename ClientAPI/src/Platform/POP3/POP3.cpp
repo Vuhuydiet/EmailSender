@@ -16,7 +16,25 @@ namespace POP3 {
         buffer = mail_receiver->Receive();
     }
 
-    // Find boundary in received mail
+    static std::vector<size_t> GetSizeOfMails(Ref<Socket> socket) {
+        std::vector<size_t> sizeOfMails;
+        socket->Send("LIST");
+        std::stringstream ss(socket->Receive());
+        std::string ignored_line;
+        std::getline(ss, ignored_line);
+        std::string line;
+        while (std::getline(ss, line)) {
+            line.pop_back();
+            if (line == ".")
+                break;
+            std::stringstream ls(line);
+            int sz = 0;
+            ls >> sz >> sz;
+            sizeOfMails.push_back(sz);
+        }
+        return sizeOfMails;
+    }
+
     static std::vector<std::string> FindMailIDs(Ref<Socket> mail_receiver, size_t mail_amount) {
         mail_receiver->Send("UIDL");
         std::string buffer = mail_receiver->Receive();
@@ -45,25 +63,6 @@ namespace POP3 {
         // erase last line ('.')
         const std::string lastline = ".\n";
         buffer.erase(buffer.size() - lastline.size());
-    }
-
-    static std::vector<size_t> GetSizeOfMails(Ref<Socket> socket) {
-        std::vector<size_t> sizeOfMails;
-        socket->Send("LIST");
-        std::stringstream ss(socket->Receive());
-        std::string ignored_line;
-        std::getline(ss, ignored_line);
-        std::string line;
-        while (std::getline(ss, line)) {
-            line.pop_back();
-            if (line == ".")
-                break;
-            std::stringstream ls(line);
-            int sz = 0;
-            ls >> sz >> sz;
-            sizeOfMails.push_back(sz);
-        }
-        return sizeOfMails;
     }
 
     void RetrieveMailsFromServer(Ref<Socket>mail_receiver, const std::filesystem::path& mailbox_folder_path) {

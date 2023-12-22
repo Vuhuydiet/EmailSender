@@ -53,8 +53,10 @@ RetrievedMail::RetrievedMail(const std::filesystem::path& msg_path) {
 			std::getline(in, line);
 
 			while (std::getline(in, line) && line.find(boundary) == std::string::npos) {
-				content += line;
+				content += line + '\n';
 			}
+			while (content.back() == '\n')
+				content.pop_back();
 			Content = content;
 		}
 
@@ -121,16 +123,16 @@ std::string RetrievedMail::ToString() const {
 
 	res += FMT::format("\n{}\n\n", this->Content);
 
-	if (AttachedFiles.empty()) {
-		res += "This email does not contain attached files.\n";
-		return res;
-	}
+	//if (AttachedFiles.empty()) {
+	//	res += "This email does not contain attached files.\n";
+	//	return res;
+	//}
 
-	res += FMT::format("Number of attached files: {}\n", this->AttachedFiles.size());
+	//res += FMT::format("Number of attached files: {}\n", this->AttachedFiles.size());
 
-	for (int i = 0; i < this->AttachedFiles.size(); i++) {
-		res += FMT::format("{}. {}\n", i + 1, this->AttachedFiles[i].FileName);
-	}
+	//for (int i = 0; i < this->AttachedFiles.size(); i++) {
+	//	res += FMT::format("{}. {}\n", i + 1, this->AttachedFiles[i].FileName);
+	//}
 
 	return res;
 }
@@ -152,4 +154,21 @@ void RetrievedMail::SaveFile(const std::string& file_name, const std::filesystem
 	}
 
 	fo.close();
+}
+
+void RetrievedMail::SaveFile(int id, const std::filesystem::path& dir) const {
+	const auto& file = this->AttachedFiles[id];
+	std::string decoded_string = base64::Decode(file.Base64_Encoded_Content);
+	std::ofstream fo(dir / file.FileName, std::ios::binary);
+	fo.write(decoded_string.c_str(), decoded_string.length());
+	fo.close();
+}
+
+void RetrievedMail::SaveAllFiles(const std::filesystem::path& dir) const {
+	for (const auto& file : this->AttachedFiles) {
+		std::string decoded_string = base64::Decode(file.Base64_Encoded_Content);
+		std::ofstream fo(dir / file.FileName, std::ios::binary);
+		fo.write(decoded_string.c_str(), decoded_string.length());
+		fo.close();
+	}
 }

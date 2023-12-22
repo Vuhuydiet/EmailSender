@@ -17,6 +17,9 @@ public:
 	bool IsRunning() const { return m_Running; }
 	void Close() { m_Running = false; }
 
+	void Restart() { m_Running = false, m_Restart = true; }
+	bool IsRestart() const { return m_Restart; }
+
 	static Application& Get() { return *s_Instance; }
 
 protected:
@@ -26,6 +29,8 @@ protected:
 private:
 	void Run();
 	bool m_Running;
+
+	bool m_Restart = false;
 
 	Clock m_Clock;
 	float m_LastFrameTime;

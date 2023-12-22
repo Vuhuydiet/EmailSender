@@ -12,12 +12,11 @@ class EmailSender : public Application
 public:
 	EmailSender()
 	{
-		CreateDirsIfNotExist({ _DEFAULT_HOST_MAILBOX_DIR, _DEFAULT_CONFIG_DIR });
+		CreateDirsIfNotExist({ _DEFAULT_HOST_MAILBOX_DIR, _DEFAULT_CONFIG_DIR, _DEFAULT_DOWNLOAD_DIR });
 
 		auto& config = Config::Get();
-		config.Init(_DEFAULT_APP_CONFIG_FILEPATH);
+		config.Init(_DEFAULT_APP_CONFIG_PATH);
 		config.Load();
-
 
 		PushOverlay(new UILayer());
 		PushLayer(new AutoloadLayer());

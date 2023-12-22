@@ -1,7 +1,7 @@
-
 # Directories
 bin/
 bin-int/
+
 EmailSenderApp/MSG/
 EmailSenderApp/assets/
 
@@ -12,13 +12,13 @@ EmailSenderApp/assets/
 **.vcxproj.filters
 **.vcxproj.user
 
-**.ini
-**.json
-
 # text files
 **.log
 **.msg
 **.txt
+**.pdf
+**.doc
+**.docx
 
 # images
 **.png
