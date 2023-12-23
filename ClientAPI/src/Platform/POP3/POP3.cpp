@@ -84,7 +84,7 @@ namespace POP3 {
                 continue;
             
             mail_receiver->Send(FMT::format("RETR {}", i + 1));
-            std::string buffer = mail_receiver->Receive("\r\n.\r\n");
+            std::string buffer = mail_receiver->Receive(sizeOfMails[i]);
 
             PreprocessRawMail(buffer);
             std::ofstream mail_file(mailbox_folder_path / id);
