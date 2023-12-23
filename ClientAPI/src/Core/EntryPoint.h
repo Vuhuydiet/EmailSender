@@ -9,7 +9,8 @@ extern Application* CreateApplication();
 int main(int argc, char** argv)
 {
 	Log::Init();
-	__INFO("Initialised Log!");
+
+	__INFO("Start of Program!");
 	TextPrinter::Init();
 
 	bool isRestart = false;
@@ -25,7 +26,7 @@ int main(int argc, char** argv)
 		__INFO("Application Closed!");
 	} while (isRestart);
 	
-	__INFO("End of Program!");
+	__INFO("End of Program!\n");
 
 	return 0;
 }

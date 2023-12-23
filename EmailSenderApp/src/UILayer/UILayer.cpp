@@ -34,11 +34,14 @@ void UILayer::OnAttach()
 	static Ref<RetrievedMail> s_shown_mail = nullptr;
 
 	m_ConnectToServer->SetFunction([&]() {
-		m_Socket = Socket::Create(SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP);
-		m_Socket->Connect(config.MailServer(), config.SMTP_Port());
-		bool is_connected = m_Socket->IsConnected();
-		m_Socket->Disconnect();
-		m_Socket = nullptr;
+		auto smtp = Socket::Create(SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP);
+		auto pop3 = Socket::Create(SocketProps::AF::INET, SocketProps::Type::SOCKSTREAM, SocketProps::Protocol::IPPROTOCOL_TCP);
+		smtp->Connect(config.MailServer(), config.SMTP_Port());
+		pop3->Connect(config.MailServer(), config.POP3_Port());
+		bool is_connected = smtp->IsConnected() && pop3->IsConnected();
+		smtp->Disconnect();
+		pop3->Disconnect();
+
 		if (!is_connected) {
 			TextPrinter::Print("Can not connect to the server, unable to send mail!\n", TextColor::Red);
 			TextPrinter::Print("Enter to restart the application\n", TextColor::Yellow);
