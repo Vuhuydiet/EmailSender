@@ -2,7 +2,7 @@
 #include "WS2Socket.h"
 
 #define _MAX_SIZE_PER_SEND			(72)
-#define _MAX_SIZE_PER_RECEIVE		(1LL << 20) // 3MB
+#define _MAX_SIZE_PER_RECEIVE		(3LL << 20) // 3MB
 
 #define _RECEIVE_ERROR				"##_receive_error"
 
