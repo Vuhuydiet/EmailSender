@@ -111,6 +111,28 @@ std::set<std::string> MailFilter::FilterMail(Ref<RetrievedMail> retrieved_mail, 
 	return ret;
 }
 
+bool MailFilter::IsFilteredTo(Ref<RetrievedMail> mail, const std::string& folder, const std::vector<FilterType>& types) const {
+	for (const auto& type : types) {
+		if (type == FilterType::From) {
+			if (_found(m_From.at(folder), mail->Sender)) 
+				return true;
+		}
+		else if (type == FilterType::Subject) {
+			for (const auto& keyword : m_Subject.at(folder)) {
+				if (mail->Subject.find(keyword) != std::string::npos)
+					return true;
+			}
+		}
+		else if (type == FilterType::Content) {
+			for (const auto& keyword : m_Content.at(folder)) {
+				if (mail->Content.find(keyword) != std::string::npos)
+					return true;
+			}
+		}
+	}
+	return false;
+}
+
 void MailFilter::AddKeyword(std::string keyword, std::string folder_name, FilterType type) {
 	// ? Create new folder if not exist
 	if (type == FilterType::From)

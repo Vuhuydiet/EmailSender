@@ -171,8 +171,8 @@ void UILayer::OnAttach()
 			mail.Content.push_back(line);
 		}
 
-		std::string have_file = GetUserInput("Have attached files (1. YES, 0. NO): ", { "1", "0" });
-		if (have_file == "1") {
+		std::string have_file = GetUserInput("Have attached files (y/n): ", { "y", "n" });
+		if (have_file == "y") {
 			std::string file_amount = GetUserInput("Number of file(s) you want to send: ", Green, IsNumber);
 			for (int i = 1; i <= std::stoi(file_amount); i++) {
 				std::string path = GetUserInput(FMT::format("Input directory {}: ", i), Blue, [&](const std::string& path) -> bool {

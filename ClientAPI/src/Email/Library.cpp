@@ -43,16 +43,25 @@ bool Library::MoveMail(const std::string& folder_name, const std::string& id, co
 	return false;
 }
 
-Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, const MailFilter& filter, const std::vector<FilterType>& filters) {
+Ref<RetrievedMail> Library::AddNewMail(const std::filesystem::path& msg_path, const MailFilter& filter) {
 	Ref<RetrievedMail> retrieved_mail = CreateRef<RetrievedMail>(msg_path);
-	std::set<std::string> filtered_folders = filter.FilterMail(retrieved_mail, filters);
+	//std::set<std::string> filtered_folders = filter.FilterMail(retrieved_mail);
 
-	for (const auto& folder : filtered_folders) {
-		m_RetrievedMails[folder].push_back(retrieved_mail);
+	//for (const auto& folder : filtered_folders) {
+	//	m_RetrievedMails[folder].push_back(retrieved_mail);
+	//}
+	//if (filtered_folders.empty())
+	//	m_RetrievedMails[m_DefaultFolder].push_back(retrieved_mail);
+
+	std::string addedFolder = m_DefaultFolder;
+	for (const auto& folder : m_FolderAddedOrders) {
+		if (filter.IsFilteredTo(retrieved_mail, folder, { FilterType::From, FilterType::Subject, FilterType::Content })) {
+			addedFolder = folder;
+			break;
+		}
 	}
-	if (filtered_folders.empty())
-		m_RetrievedMails[m_DefaultFolder].push_back(retrieved_mail);
 
+	m_RetrievedMails[addedFolder].push_back(retrieved_mail);
 	m_AddedMails.insert(retrieved_mail->Id);
 	SetReadStatus(retrieved_mail->Id, false);
 

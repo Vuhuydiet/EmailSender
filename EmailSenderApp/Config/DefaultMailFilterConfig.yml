@@ -4,34 +4,34 @@ Filters:
       - Name: Important
         Keys: [dad@gmail.com, ex@gmail.com, lover@gmail.com, mum@gmail.com]
       - Name: Inbox
-        Keys: [htty@gmail.com, nqt@gmail.com, ntv@gmail.com]
+        Keys: []
       - Name: Project
-        Keys: [member@gmail.com, nqt@gmail.com, team@gmail.com]
+        Keys: [member@gmail.com, team@gmail.com]
       - Name: Spam
         Keys: [hack@gmail.com, qc@gmail.com]
       - Name: Work
-        Keys: [htty@gmail.com, ntv@gmail.com]
+        Keys: []
   - Type: Subject
     Folders:
       - Name: Important
         Keys: [Important, Urgent]
       - Name: Inbox
-        Keys: [Hello, Hi]
+        Keys: []
       - Name: Project
-        Keys: [EmailSender, Project]
+        Keys: [Project]
       - Name: Spam
         Keys: [Ad, Advertisement, Hack, QC]
       - Name: Work
-        Keys: [EmailSender, Work]
+        Keys: [Work]
   - Type: Content
     Folders:
       - Name: Important
         Keys: [email sender, important, project, work]
       - Name: Inbox
-        Keys: [hello, hi, make friend]
+        Keys: []
       - Name: Project
-        Keys: [email sender, project, socket, wireshark]
+        Keys: []
       - Name: Spam
         Keys: [advertisement, hack, spam]
       - Name: Work
-        Keys: [DSA, mmt, network, nmlt, oop]
+        Keys: []
