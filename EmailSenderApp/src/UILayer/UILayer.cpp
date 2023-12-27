@@ -305,7 +305,6 @@ void UILayer::OnAttach()
 	m_DisplayMail->SetFunction([&]() {
 		m_MailContainer->SetReadStatus(s_shown_mail->Id, true);
 
-		TextPrinter::Print("The is the content of your mail:\n\n", Green);
 		TextPrinter::Print("{}", White, s_shown_mail->ToString());
 
 		if (s_shown_mail->AttachedFiles.empty()) {

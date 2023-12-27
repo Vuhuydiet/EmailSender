@@ -6,30 +6,6 @@
 
 void MailFilter::Load(const std::filesystem::path& path)
 {
-	/*std::map<std::string, std::set<std::string>> from = {
-		{"Inbox", {"nqt@gmail.com", "ntv@gmail.com", "htty@gmail.com"}},
-		{"Important", {"ex@gmail.com", "lover@gmail.com", "mum@gmail.com", "dad@gmail.com"}},
-		{"Project", {"team@gmail.com", "member@gmail.com", "nqt@gmail.com"}},
-		{"Work", {"htty@gmail.com", "ntv@gmail.com"}},
-		{"Spam", {"hack@gmail.com", "qc@gmail.com"}}
-	};
-	std::map<std::string, std::set<std::string>> subject = {
-		{"Inbox", {"Hi", "Hello"}},
-		{"Important", {"Important", "Urgent"}},
-		{"Project", {"Project", "EmailSender"}},
-		{"Work", {"Work", "EmailSender"}},
-		{"Spam", {"Hack", "QC", "Ad", "Advertisement"}}
-	};
-	std::map<std::string, std::set<std::string>> content = {
-		{"Inbox", {"make friend", "hello", "hi"}},
-		{"Important", {"project", "work", "important", "email sender"}},
-		{"Project", {"project", "email sender", "wireshark", "socket"}},
-		{"Work", {"DSA", "network", "mmt", "nmlt", "oop"}},
-		{"Spam", {"hack", "spam", "advertisement"}}
-	};
-	m_From = from;
-	m_Subject = subject;
-	m_Content = content;*/
 	if (!std::filesystem::exists(path)) {
 		__ERROR("File path '{}' does not exist!", path.string());
 		return;

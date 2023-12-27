@@ -3,6 +3,7 @@
 #include "Base64/Base64.h"
 #include "Core/Format.h"
 #include "Utils/Utils.h"
+#include "Debug/Debug.h"
 
 
 static std::string FindBoundary(const std::string& first_line) {
@@ -114,7 +115,7 @@ std::string RetrievedMail::ToString() const {
 	
 	res += "Cc: ";
 	for (const auto& cc : this->Ccs) {
-		res += cc + ", ";
+		res += cc;
 		if (cc != Ccs.back())
 			res += ", ";
 	}
