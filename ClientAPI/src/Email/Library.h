@@ -29,7 +29,7 @@ public:
 	void SetReadStatus(const std::string& id, bool read) { m_ReadMailStatus[id] = read; }
 	bool GetReadStatus(const std::string& id) const { return _found(m_ReadMailStatus, id) && m_ReadMailStatus.at(id); }
 private:
-	Ref<RetrievedMail> AddNewMail(const std::filesystem::path& msg_path, const MailFilter& filter, const std::vector<FilterType>& filters = { FilterType::From, FilterType::Subject, FilterType::Content });
+	Ref<RetrievedMail> AddNewMail(const std::filesystem::path& msg_path, const MailFilter& filter);
 private:
 	std::string m_DefaultFolder = "Default";
 

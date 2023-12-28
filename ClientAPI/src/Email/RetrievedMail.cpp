@@ -3,6 +3,7 @@
 #include "Base64/Base64.h"
 #include "Core/Format.h"
 #include "Utils/Utils.h"
+#include "Debug/Debug.h"
 
 
 static std::string FindBoundary(const std::string& first_line) {
@@ -55,7 +56,7 @@ RetrievedMail::RetrievedMail(const std::filesystem::path& msg_path) {
 			while (std::getline(in, line) && line.find(boundary) == std::string::npos) {
 				content += line + '\n';
 			}
-			while (content.back() == '\n')
+			while (!content.empty() && content.back() == '\n')
 				content.pop_back();
 			Content = content;
 		}
@@ -106,17 +107,18 @@ std::string RetrievedMail::ToString() const {
 	
 	res += "To: ";
 	for (const auto& to : this->Tos) {
-		res += to + ", ";
+		res += to;
+		if (to != Tos.back()) 
+			res += ", ";
 	}
-	res.pop_back();
-	res.pop_back();
 	res += "\n";
 	
 	res += "Cc: ";
 	for (const auto& cc : this->Ccs) {
-		res += cc + ", ";
+		res += cc;
+		if (cc != Ccs.back())
+			res += ", ";
 	}
-	res.pop_back(); res.pop_back();
 	res += "\n";
 
 	res += FMT::format("Subject: {}\n",this->Subject);

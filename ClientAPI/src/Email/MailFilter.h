@@ -21,7 +21,7 @@ public:
 	void AddKeyword(std::string keyword, std::string folder_name, FilterType type);
 	
 	std::set<std::string> FilterMail(Ref<RetrievedMail> retrieved_mail, const std::vector<FilterType>& filter_types) const;
-
+	bool IsFilteredTo(Ref<RetrievedMail> mail, const std::string& folder, const std::vector<FilterType>& types) const;
 private:
 	void FilterMailByFrom(Ref<RetrievedMail> retrieved_mail, std::set<std::string>& folders) const;
 	void FilterMailBySubject(Ref<RetrievedMail> retrieved_mail, std::set<std::string>& folders) const;

@@ -6,30 +6,6 @@
 
 void MailFilter::Load(const std::filesystem::path& path)
 {
-	/*std::map<std::string, std::set<std::string>> from = {
-		{"Inbox", {"nqt@gmail.com", "ntv@gmail.com", "htty@gmail.com"}},
-		{"Important", {"ex@gmail.com", "lover@gmail.com", "mum@gmail.com", "dad@gmail.com"}},
-		{"Project", {"team@gmail.com", "member@gmail.com", "nqt@gmail.com"}},
-		{"Work", {"htty@gmail.com", "ntv@gmail.com"}},
-		{"Spam", {"hack@gmail.com", "qc@gmail.com"}}
-	};
-	std::map<std::string, std::set<std::string>> subject = {
-		{"Inbox", {"Hi", "Hello"}},
-		{"Important", {"Important", "Urgent"}},
-		{"Project", {"Project", "EmailSender"}},
-		{"Work", {"Work", "EmailSender"}},
-		{"Spam", {"Hack", "QC", "Ad", "Advertisement"}}
-	};
-	std::map<std::string, std::set<std::string>> content = {
-		{"Inbox", {"make friend", "hello", "hi"}},
-		{"Important", {"project", "work", "important", "email sender"}},
-		{"Project", {"project", "email sender", "wireshark", "socket"}},
-		{"Work", {"DSA", "network", "mmt", "nmlt", "oop"}},
-		{"Spam", {"hack", "spam", "advertisement"}}
-	};
-	m_From = from;
-	m_Subject = subject;
-	m_Content = content;*/
 	if (!std::filesystem::exists(path)) {
 		__ERROR("File path '{}' does not exist!", path.string());
 		return;
@@ -109,6 +85,28 @@ std::set<std::string> MailFilter::FilterMail(Ref<RetrievedMail> retrieved_mail, 
 	}
 
 	return ret;
+}
+
+bool MailFilter::IsFilteredTo(Ref<RetrievedMail> mail, const std::string& folder, const std::vector<FilterType>& types) const {
+	for (const auto& type : types) {
+		if (type == FilterType::From) {
+			if (_found(m_From.at(folder), mail->Sender)) 
+				return true;
+		}
+		else if (type == FilterType::Subject) {
+			for (const auto& keyword : m_Subject.at(folder)) {
+				if (mail->Subject.find(keyword) != std::string::npos)
+					return true;
+			}
+		}
+		else if (type == FilterType::Content) {
+			for (const auto& keyword : m_Content.at(folder)) {
+				if (mail->Content.find(keyword) != std::string::npos)
+					return true;
+			}
+		}
+	}
+	return false;
 }
 
 void MailFilter::AddKeyword(std::string keyword, std::string folder_name, FilterType type) {
