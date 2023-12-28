@@ -9,7 +9,7 @@
 #include "Core/Config.h"
 
 enum class FilterType {
-	From, Subject, Content
+	None, From, Subject, Content
 };
 
 class MailFilter {

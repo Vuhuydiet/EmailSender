@@ -15,13 +15,14 @@ public:
 	{
 	}
 
-	void SetFunction(const std::function<void()>& fn) { m_RunFn = fn; }
+	void SetFunction(const std::function<Ref<Menu>()>& fn) { m_RunFn = fn; }
 	const std::string& GetName() const { return m_Name; }
 
-	void Run() {
-		m_RunFn(); 
+	Ref<Menu> Run() {
+		Ref<Menu> ret = m_RunFn(); 
 		if (m_AutoClearScreen)
 			system("CLS");
+		return ret;
 	}
 
 	static void Clear() {
@@ -30,11 +31,9 @@ public:
 
 	void SetAutoClear(bool clear) { m_AutoClearScreen = clear; }
 
-public:
-	Ref<Menu> next = nullptr;
 private:
 	std::string m_Name;
-	std::function<void()> m_RunFn = []() {};
+	std::function<Ref<Menu>()> m_RunFn = []() -> Ref<Menu> {return nullptr; };
 
 	bool m_AutoClearScreen;
 };

@@ -40,7 +40,7 @@ inline std::vector<std::string> Split(const std::string& str, char c) {
 
 inline std::string to_lower(std::string s) {
 	for (auto& c : s) {
-		c = _tolower(c);
+		c = _to_lower(c);
 	}
 	return s;
 }

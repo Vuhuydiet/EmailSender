@@ -18,6 +18,9 @@ private:
 	std::string GetUserInput(const std::string& notify, const std::set<std::string>& valid_selections, TextColor color = TextColor::Blue) const;
 
 	void SaveConfigFiles() const;
+
+	bool TestSMTPConnection() const;
+	bool TestPOP3Connection() const;
 private:
 	Ref<Socket> m_Socket;
 

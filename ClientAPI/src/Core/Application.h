@@ -28,7 +28,7 @@ protected:
 
 private:
 	void Run();
-	bool m_Running;
+	bool m_Running = true;
 
 	bool m_Restart = false;
 

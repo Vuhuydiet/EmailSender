@@ -19,9 +19,6 @@ void AutoloadLayer::OnUpdate(float dt) {
 		POP3::LoginServer(m_Socket, config.Username(), config.Password());
 		POP3::RetrieveMailsFromServer(m_Socket, _DEFAULT_HOST_MAILBOX_DIR / config.Username());
 	}
-	else {
-		Application::Get().Restart();
-	}
 		
 	m_Socket->Disconnect();
 	m_Socket = nullptr;
