@@ -23,6 +23,8 @@ void UILayer::OnAttach()
 	m_SendMail				= CreateRef<Menu>("SendMail", false);
 	m_End					= CreateRef<Menu>("End", false);
 	m_ShowFolders			= CreateRef<Menu>("ShowFolder", true);
+	m_AddKeyword			= CreateRef<Menu>("AddKeyword", true);
+	m_CreateFolder			= CreateRef<Menu>("CreateFolder", true);
 	m_ShowMails				= CreateRef<Menu>("ShowMails", true);
 	m_DisplayMail			= CreateRef<Menu>("DisplayMails", false);
 	m_MoveMail				= CreateRef<Menu>("MoveMail", true);
@@ -126,7 +128,7 @@ void UILayer::OnAttach()
 			"3. Log out\n"
 			"4. Exit\n";
 		TextPrinter::Print(menu, Green);
-		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "1", "2", "3", "4" }, Blue);
+		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "1", "2", "3", "4"}, Blue);
 		if (choice == "1")
 			m_MainMenu->next = m_SendMail;
 		else if (choice == "2")
@@ -238,9 +240,10 @@ void UILayer::OnAttach()
 			TextPrinter::Print("{}. {} ({})\n", Blue, i, folder_name, folders.at(folder_name).size());
 			i++;
 		}
-		TextPrinter::Print("\n'm': return to Menu \n'Enter': reload folder \nSelect a folder :\n", Yellow);
+		
+		TextPrinter::Print("\n'm': return to Menu \n'Enter': reload folder \n'c': create folder \nSelect a folder :\n", Yellow);
 		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), Blue, [&](const std::string& inp) -> bool {
-			return inp == "m" || inp.empty() || IsNumberFromTo(inp, 1, i - 1);
+			return inp == "m" || inp.empty() || inp == "c" || IsNumberFromTo(inp, 1, i - 1);
 		});
 		
 		if (choice == "m") {
@@ -251,11 +254,51 @@ void UILayer::OnAttach()
 			Menu::Clear();
 			m_ShowFolders->next = m_ShowFolders;
 		}
+		else if (choice == "c") {
+			Menu::Clear();
+			m_ShowFolders->next = m_CreateFolder;
+		}
 		else {
 			int ind = std::stoi(choice) - 1;
 			s_shown_folder = no_sorted_folders[ind];
 			m_ShowFolders->next = m_ShowMails;
 		}
+	});
+
+	m_AddKeyword->SetFunction([&]() {
+		
+		TextPrinter::Print("Select filter type: \n1. From \n2. Subject \n3. Content\n", Yellow);
+		std::string filter_type_choice = GetUserInput(FMT::format("{} >> ", config.Username()), Blue, IsNumberFromTo, 1, 3);
+		FilterType filter_type;
+		if (filter_type_choice == "1") {
+			filter_type = FilterType::From;
+		}
+		else if (filter_type_choice == "2") {
+			filter_type = FilterType::Subject;
+		}
+		else if (filter_type_choice == "3") {
+			filter_type = FilterType::Content;
+		}
+		std::string keyword = GetUserInput("Input keyword: ", Blue);
+		m_MailFilter->AddKeyword(keyword, s_shown_folder, filter_type);
+
+		TextPrinter::Print("\n'm': return to Menu \n'mails': return to Mail List \n", Yellow);
+		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "m", "mails"}, Blue);
+		if (choice == "m")
+			m_AddKeyword->next = m_MainMenu;
+		else
+			m_AddKeyword->next = m_ShowMails;
+		Menu::Clear();
+	});
+
+	m_CreateFolder->SetFunction([&]() {
+		TextPrinter::Print("Input folder name:\n");
+		std::string folder_name = GetUserInput(FMT::format("{} >> ", config.Username()), Blue, [&](const std::string& inp) -> bool {
+			return !inp.empty();
+			});
+
+		m_MailContainer->CreateFolder(folder_name);
+		m_CreateFolder->next = m_MainMenu;
 	});
 	
 	m_ShowMails->SetFunction([&]() {
@@ -275,14 +318,17 @@ void UILayer::OnAttach()
 		}
 		
 		std::string choice = "m";
-		TextPrinter::Print("\n'm': return to Menu \n'd': show folders\n", Yellow);
+		TextPrinter::Print("\n'm': return to Menu \n'k': add keyword \n'd': show folders\n", Yellow);
 		choice = GetUserInput(FMT::format("{} >> ", config.Username()), Blue, [&](const std::string& inp) {
-			return inp == "m" || inp == "d" || IsNumberFromTo(inp, 1, i - 1);
+			return inp == "m" || inp == "d" || inp == "k" || IsNumberFromTo(inp, 1, i - 1);
 		});
 
 		m_ShowMails->SetAutoClear(true);
 		if (choice == "m") {
 			m_ShowMails->next = m_MainMenu;
+		}
+		else if (choice == "k") {
+			m_ShowMails->next = m_AddKeyword;
 		}
 		else if (choice == "d") {
 			m_ShowMails->next = m_ShowFolders;

@@ -24,6 +24,6 @@ private:
 	Ref<Library> m_MailContainer = nullptr;
 	Ref<MailFilter> m_MailFilter = nullptr;
 private:
-	Ref<Menu> m_ConnectToServer, m_Start, m_Login, m_MainMenu, m_SendMail, m_End, m_ShowFolders, m_ShowMails, m_DisplayMail, m_InputSavingFilePath, m_MoveMail;
+	Ref<Menu> m_ConnectToServer, m_Start, m_Login, m_MainMenu, m_SendMail, m_End, m_ShowFolders, m_AddKeyword, m_CreateFolder, m_ShowMails, m_DisplayMail, m_InputSavingFilePath, m_MoveMail;
 	Ref<Menu> m_CurrentMenu;
 };
