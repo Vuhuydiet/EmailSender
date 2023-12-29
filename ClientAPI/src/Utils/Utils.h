@@ -35,3 +35,12 @@ inline std::vector<std::string> Split(const std::string& str, char c) {
 	}
 	return ret;
 }
+
+#define _to_lower(c) (c | (1 << 5))
+
+inline std::string to_lower(std::string s) {
+	for (auto& c : s) {
+		c = _to_lower(c);
+	}
+	return s;
+}

@@ -90,16 +90,20 @@ std::set<std::string> MailFilter::FilterMail(Ref<RetrievedMail> retrieved_mail, 
 bool MailFilter::IsFilteredTo(Ref<RetrievedMail> mail, const std::string& folder, const std::vector<FilterType>& types) const {
 	for (const auto& type : types) {
 		if (type == FilterType::From) {
-			if (_found(m_From.at(folder), mail->Sender)) 
+			if (_found(m_From, folder) && _found(m_From.at(folder), mail->Sender)) 
 				return true;
 		}
 		else if (type == FilterType::Subject) {
+			if (!_found(m_Subject, folder))
+				continue;
 			for (const auto& keyword : m_Subject.at(folder)) {
 				if (mail->Subject.find(keyword) != std::string::npos)
 					return true;
 			}
 		}
 		else if (type == FilterType::Content) {
+			if (!_found(m_Content, folder))
+				continue;
 			for (const auto& keyword : m_Content.at(folder)) {
 				if (mail->Content.find(keyword) != std::string::npos)
 					return true;
