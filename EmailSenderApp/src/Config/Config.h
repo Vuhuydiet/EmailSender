@@ -39,5 +39,6 @@ private:
 	bool m_IsLoggedIn = false;
 	std::string m_Username;
 	std::string m_Password;
+
 	std::filesystem::path m_ConfigFilePath;
 };

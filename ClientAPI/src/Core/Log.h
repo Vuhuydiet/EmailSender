@@ -22,7 +22,7 @@ private:
 std::string Add_NL_Helper(const char* str);
 std::string Add_NL_Helper(const std::string& str);
 
-#if defined(_DEBUG)
+//#if defined(_DEBUG)
 	#if defined(_LIB)
 		#define __TRACE(x, ...)			::Log::GetCoreLogger()->trace(Add_NL_Helper(x), __VA_ARGS__)
 		#define __DEBUG(x, ...)			::Log::GetCoreLogger()->debug(Add_NL_Helper(x), __VA_ARGS__)
@@ -38,21 +38,21 @@ std::string Add_NL_Helper(const std::string& str);
 		#define __ERROR(x, ...)			::Log::GetClientLogger()->error(Add_NL_Helper(x), __VA_ARGS__)	
 		#define __CRITICAL(x, ...)		::Log::GetClientLogger()->critical(Add_NL_Helper(x), __VA_ARGS__)	
 	#endif
-#else
-	#if defined(_LIB)
-		#define __TRACE(...)	
-		#define __DEBUG(...)
-		#define __INFO(...)		
-		#define __WARN(...)		
-		#define __ERROR(...)	
-		#define __CRITICAL(...) 
-
-	#elif defined(_APP)
-		#define __TRACE(...)	
-		#define __DEBUG(...)
-		#define __INFO(...)			
-		#define __WARN(...)			
-		#define __ERROR(...)
-		#define __CRITICAL(...)
-	#endif
-#endif
+//#else
+//	#if defined(_LIB)
+//		#define __TRACE(...)	
+//		#define __DEBUG(...)
+//		#define __INFO(...)		
+//		#define __WARN(...)		
+//		#define __ERROR(...)	
+//		#define __CRITICAL(...) 
+//
+//	#elif defined(_APP)
+//		#define __TRACE(...)	
+//		#define __DEBUG(...)
+//		#define __INFO(...)			
+//		#define __WARN(...)			
+//		#define __ERROR(...)
+//		#define __CRITICAL(...)
+//	#endif
+//#endif

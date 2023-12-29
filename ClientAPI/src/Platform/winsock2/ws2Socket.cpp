@@ -16,6 +16,7 @@ static const std::map<SocketProps::Protocol, int> s_ToWs2Protocol =
 
 WSADATA WS2Socket::s_WsaData;
 static char* s_ReceiveBuffer = nullptr;
+static std::mutex s_BufferMutex;
 
 void WS2Socket::Init() {
 	int iResult = WSAStartup(MAKEWORD(2, 2), &s_WsaData);
@@ -114,6 +115,8 @@ void WS2Socket::Send(const std::string& msg)
 std::string WS2Socket::Receive(size_t size) {
 	ASSERT(m_IsConnected, "Hasn't connected! Can not receive message!");
 
+	std::lock_guard<std::mutex> guard(s_BufferMutex);
+
 	std::string res;
 	int received_bytes = 0;
 	do {
@@ -132,11 +135,14 @@ std::string WS2Socket::Receive(size_t size) {
 			return _RECEIVE_ERROR;
 		}
 	} while (received_bytes < size);
+
 	return res;
 }
 
 std::string WS2Socket::Receive(const std::string& back_string) {
 	ASSERT(m_IsConnected, "Hasn't connected! Can not receive message!");
+
+	std::lock_guard<std::mutex> guard(s_BufferMutex);
 
 	std::string res;
 	do {
@@ -158,5 +164,6 @@ std::string WS2Socket::Receive(const std::string& back_string) {
 			return _RECEIVE_ERROR;
 		}
 	} while (true);
+
 	return res;
 }
