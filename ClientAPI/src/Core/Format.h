@@ -41,4 +41,13 @@ namespace FMT {
 		res.replace(res.find(_RPC), _RPC_LEN, std::to_string(arg3));
 		return res;
 	}
+
+	inline std::string cformat(const char* fmt, ...) {
+		va_list args;
+		va_start(args, fmt);
+		char buffer[1024];
+		vsprintf_s(buffer, fmt, args);
+		va_end(args);
+		return std::string(buffer);
+	}
 }

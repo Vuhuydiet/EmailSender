@@ -5,6 +5,7 @@
 #include <filesystem>
 #include <fstream>
 
+#include "Core/Date.h"
 
 struct FileInfo {
 	std::string FileName;
@@ -25,6 +26,8 @@ public:
 	void SaveFile(int id, const std::filesystem::path& dir) const;
 	void SaveAllFiles(const std::filesystem::path& dir) const;
 public:
+	Date SendDate;
+
 	std::string Sender;
 	std::vector<std::string> Tos;
 	std::vector<std::string> Ccs;

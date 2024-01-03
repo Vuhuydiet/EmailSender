@@ -27,6 +27,7 @@ void WS2Socket::Init() {
 
 void WS2Socket::Shutdown() {
 	delete[] s_ReceiveBuffer;
+	WSACleanup();
 	s_ReceiveBuffer = nullptr;
 }
 
@@ -53,14 +54,12 @@ void WS2Socket::CreateNewSocket()
 
 	if (m_SocketDescriptor == INVALID_SOCKET) {
 		__ERROR("Socket failed with error: {0}", WSAGetLastError());
-		WSACleanup();
 		return;
 	}
 }
 
 void WS2Socket::Delete() {
 	closesocket(m_SocketDescriptor);
-	WSACleanup();
 	m_SocketDescriptor = INVALID_SOCKET;
 	m_Af = SocketProps::AF::NONE, m_Type = SocketProps::Type::NONE, m_Protocol = SocketProps::Protocol::NONE;
 	m_IsConnected = false;

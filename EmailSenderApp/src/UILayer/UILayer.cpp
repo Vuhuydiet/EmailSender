@@ -30,13 +30,14 @@ void UILayer::OnAttach()
 	m_MoveMail				= CreateRef<Menu>("MoveMail", true);
 	m_InputSavingFilePath	= CreateRef<Menu>("InputSavingPath", true);
 
-	m_CurrentMenu = m_ConnectToServer;
+	m_CurrentMenu = m_Start;
 
 	static std::string s_shown_folder;
 	static Ref<RetrievedMail> s_shown_mail = nullptr;
+	static std::string s_label;
 
-	m_ConnectToServer->SetFunction([&]() {
-		if (!TestSMTPConnection() || !TestPOP3Connection()) {
+	/*m_ConnectToServer->SetFunction([&]() {
+		if (!TestSMTPConnection()) {
 			TextPrinter::Print("Can not connect to the server, unable to send mail!\n", TextColor::Red);
 			TextPrinter::Print("'Enter': restart the application\n'e': exit\n", TextColor::Yellow);
 			std::string choice = GetUserInput(">>  ", Blue, [&](const std::string& inp) {
@@ -53,7 +54,10 @@ void UILayer::OnAttach()
 		}
 
 		return m_Start;
-	});
+	});*/
+
+	// TEMP
+	m_ConnectToServer = m_MainMenu;
 
 	m_Start->SetFunction([&]() {
 		if (config.IsLoggedIn())
@@ -87,8 +91,9 @@ void UILayer::OnAttach()
 			config.LogIn(username, password);
 		}
 		Menu::Clear();
-
 		TextPrinter::Print("Succesfully logged in to '{}'!\n", Yellow, config.Username());
+
+		s_label = FMT::format("{} >> ", config.Username());
 
 		const std::string& username = config.Username();
 		const std::filesystem::path user_mailbox_dir = _DEFAULT_HOST_MAILBOX_DIR / username;
@@ -126,7 +131,7 @@ void UILayer::OnAttach()
 			"3. Log out\n"
 			"4. Exit\n";
 		TextPrinter::Print(menu, Green);
-		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "1", "2", "3", "4"}, Blue);
+		std::string choice = GetUserInput(s_label, { "1", "2", "3", "4"}, Blue);
 		if (choice == "1")
 			return m_SendMail;
 		if (choice == "2")
@@ -201,6 +206,7 @@ void UILayer::OnAttach()
 		m_Socket->Connect(config.MailServer(), config.SMTP_Port());
 		if (!m_Socket->IsConnected()) {
 			Menu::Clear();
+			TextPrinter::Print("Cannot connect to SMTP server, unable to send your email!\n", Red);
 			m_Socket->Disconnect();
 			m_Socket = nullptr;
 			return m_ConnectToServer;
@@ -245,8 +251,8 @@ void UILayer::OnAttach()
 		}
 		
 		TextPrinter::Print("\n'c': create folder \n'm': return to Menu \n'Enter': reload folder \nSelect a folder:\n", Yellow);
-		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), Blue, [&](const std::string& inp) -> bool {
-			return inp == "m" || inp.empty() || inp == "c" || IsNumberFromTo(inp, 1, i - 1);
+		std::string choice = GetUserInput(s_label, Blue, [&](const std::string& inp) -> bool {
+			return inp == "m" || inp.empty() || inp == "c" || IsNumberFromTo(inp, 1, (int)no_sorted_folders.size());
 		});
 		
 		if (choice == "c")
@@ -258,7 +264,6 @@ void UILayer::OnAttach()
 		if (choice.empty())
 			return m_ShowFolders;
 		
-		Menu::Clear();
 		int ind = std::stoi(choice) - 1;
 		s_shown_folder = no_sorted_folders[ind];
 		return m_ShowMails;
@@ -266,7 +271,7 @@ void UILayer::OnAttach()
 
 	m_AddKeyword->SetFunction([&]() {
 		TextPrinter::Print("Folder: '{}'\nSelect filter type: \n1. From \n2. Subject \n3. Content\n", Yellow, s_shown_folder);
-		std::string filter_type_choice = GetUserInput(FMT::format("{} >> ", config.Username()), Blue, IsNumberFromTo, 1, 3);
+		std::string filter_type_choice = GetUserInput(s_label, Blue, IsNumberFromTo, 1, 3);
 		FilterType filter_type = (FilterType)std::stoi(filter_type_choice);
 		std::string keyword = GetUserInput("Input keyword: ", Blue);
 		m_MailFilter->AddKeyword(keyword, s_shown_folder, filter_type);
@@ -288,7 +293,8 @@ void UILayer::OnAttach()
 	
 	m_ShowMails->SetFunction([&]() {
 		m_MailContainer->LoadMails(*m_MailFilter);
-		auto& mails = m_MailContainer->GetRetrievedMails(s_shown_folder);
+		std::vector<Ref<RetrievedMail>> mails = m_MailContainer->GetRetrievedMails(s_shown_folder);
+		std::sort(mails.begin(), mails.end(), [](Ref<RetrievedMail> a, Ref<RetrievedMail> b) { return a->SendDate > b->SendDate; });
 
 		TextPrinter::Print("These are your retrieved mails in '{}':\n\n", Green, s_shown_folder);
 
@@ -296,16 +302,15 @@ void UILayer::OnAttach()
 			TextPrinter::Print("(empty)\n", White);
 
 		int i = 1;
-		for (auto& mail : mails) {
+		for (const auto& mail: mails) {
 			bool read = m_MailContainer->GetReadStatus(mail->Id);
-			TextPrinter::Print("{}. {}[{}] - {}\n", Yellow, i, (read ? "" : "(*) "),  mail->Sender, mail->Subject);
+			TextPrinter::Print("{}. [{}] - {} ({}) {}\n", (read ? White : Yellow), i,  mail->Sender, mail->Subject, mail->SendDate.ToString(), (read ? "" : "(*)"));
 			i++;
 		}
-		
-		std::string choice = "m";
 		TextPrinter::Print("\n'k': add keyword \n'd': show folders\n'm': return to Menu \n", Yellow);
-		choice = GetUserInput(FMT::format("{} >> ", config.Username()), Blue, [&](const std::string& inp) {
-			return inp == "m" || inp == "d" || inp == "k" || IsNumberFromTo(inp, 1, i - 1);
+		
+		std::string choice = GetUserInput(s_label, Blue, [&](const std::string& inp) {
+			return inp == "m" || inp == "d" || inp == "k" || IsNumberFromTo(inp, 1, (int)mails.size());
 		});
 
 		m_ShowMails->SetAutoClear(true);
@@ -316,10 +321,11 @@ void UILayer::OnAttach()
 		if (choice == "d")
 			return m_ShowFolders;
 		
-		s_shown_mail = mails[std::stoi(choice) - 1];
+		int index = std::stoi(choice) - 1;
+		s_shown_mail = mails[index];
 
 		TextPrinter::Print("'dp': display mail \n'mv': move mail \n", Yellow);
-		choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "dp", "mv" }, Blue);
+		choice = GetUserInput(s_label, { "dp", "mv" }, Blue);
 		if (choice == "dp")
 			return m_DisplayMail;
 		if (choice == "mv") {
@@ -353,7 +359,7 @@ void UILayer::OnAttach()
 		}
 
 		TextPrinter::Print("\n'r': reply\n'mails': return to Mail List\n'm': return to Menu \n", Yellow);
-		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "m", "mails", "r" }, Blue);
+		std::string choice = GetUserInput(s_label, { "m", "mails", "r" }, Blue);
 
 		Menu::Clear();
 		if (choice == "m")
@@ -380,7 +386,7 @@ void UILayer::OnAttach()
 			TextPrinter::Print("Can't move mail!\n", Red);
 
 		TextPrinter::Print("\n'mails': return to Mail List\n'd': return to folders \n'm': return to Menu \n", Yellow);
-		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "m", "d", "mails" }, Blue);
+		std::string choice = GetUserInput(s_label, { "m", "d", "mails" }, Blue);
 		if (choice == "m")
 			return m_MainMenu;
 		if (choice == "d")
@@ -410,7 +416,7 @@ void UILayer::OnAttach()
 		TextPrinter::Print("Downloaded successfully!\n\n", Yellow);
 		
 		TextPrinter::Print("'mails': return to Mail List\n'm': return Menu \n", Yellow);
-		std::string choice = GetUserInput(FMT::format("{} >> ", config.Username()), { "m", "mails" }, Blue);
+		std::string choice = GetUserInput(s_label, { "m", "mails" }, Blue);
 		if (choice == "m")
 			return m_MainMenu;
 		if (choice == "mails")
