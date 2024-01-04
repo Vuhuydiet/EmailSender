@@ -2,7 +2,7 @@
 #include "MailFilter.h"
 
 #include <yaml-cpp/yaml.h>
-#include "YAML_Converter/Converter.h"
+#include "Utils/yamlConverter.h"
 
 void MailFilter::Load(const std::filesystem::path& path)
 {

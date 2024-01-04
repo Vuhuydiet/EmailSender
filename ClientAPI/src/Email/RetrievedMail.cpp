@@ -29,7 +29,7 @@ RetrievedMail::RetrievedMail(const std::filesystem::path& msg_path) {
 
 	std::string content;
 	do {
-		if (line.find("DATE: ") != std::string::npos) {
+		if (line.find("Date: ") != std::string::npos) {
 			SendDate = Date(line.substr(line.find(" ") + 1));
 		}
 

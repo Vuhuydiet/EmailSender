@@ -3,6 +3,6 @@ SMTP port: 2500
 POP3 port: 1100
 Autoload: 10
 Max Sent File Size: 3
-Logged In: true
-Username: tuananh
-Password: 123
+Logged In: false
+Username: ""
+Password: ""

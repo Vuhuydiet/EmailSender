@@ -239,20 +239,20 @@ void UILayer::OnAttach()
 	m_ShowFolders->SetFunction([&]() {
 		if (!TestPOP3Connection())
 			TextPrinter::Print("Cannot connect to POP3 server, unable to receive mails!\n\n", Red);
-
-		TextPrinter::Print("Folders in your account: \n");
 		m_MailContainer->LoadMails(*m_MailFilter);
+
 		const auto& folders = m_MailContainer->GetRetrievedMails();
 		const auto& no_sorted_folders = m_MailContainer->GetAddedFolder();
 		int i = 1;
+		TextPrinter::Print("Folders in your account: \n");
 		for (const auto& folder_name : no_sorted_folders) {
 			TextPrinter::Print("{}. {} ({})\n", Blue, i, folder_name, folders.at(folder_name).size());
 			i++;
 		}
 		
-		TextPrinter::Print("\n'c': create folder \n'm': return to Menu \n'Enter': reload folder \nSelect a folder:\n", Yellow);
+		TextPrinter::Print("\n'Enter': reload folders\n'c': create folder \n'm': return to Menu \n", Yellow);
 		std::string choice = GetUserInput(s_label, Blue, [&](const std::string& inp) -> bool {
-			return inp == "m" || inp.empty() || inp == "c" || IsNumberFromTo(inp, 1, (int)no_sorted_folders.size());
+			return inp.empty() || inp == "m" || inp == "c" || IsNumberFromTo(inp, 1, (int)no_sorted_folders.size());
 		});
 		
 		if (choice == "c")
@@ -292,7 +292,10 @@ void UILayer::OnAttach()
 	});
 	
 	m_ShowMails->SetFunction([&]() {
+		if (!TestPOP3Connection())
+			TextPrinter::Print("Cannot connect to POP3 server, unable to receive mails!\n\n", Red);
 		m_MailContainer->LoadMails(*m_MailFilter);
+
 		std::vector<Ref<RetrievedMail>> mails = m_MailContainer->GetRetrievedMails(s_shown_folder);
 		std::sort(mails.begin(), mails.end(), [](Ref<RetrievedMail> a, Ref<RetrievedMail> b) { return a->SendDate > b->SendDate; });
 
@@ -304,16 +307,23 @@ void UILayer::OnAttach()
 		int i = 1;
 		for (const auto& mail: mails) {
 			bool read = m_MailContainer->GetReadStatus(mail->Id);
-			TextPrinter::Print("{}. [{}] - {} ({}) {}\n", (read ? White : Yellow), i,  mail->Sender, mail->Subject, mail->SendDate.ToString(), (read ? "" : "(*)"));
+			std::string sendTime;
+			if (mail->SendDate.SameDay(Date()))
+				sendTime = FMT::format("{}:{}", mail->SendDate.hour, mail->SendDate.min);
+			else
+				sendTime = FMT::format("{}/{}/{}", mail->SendDate.day, mail->SendDate.month, mail->SendDate.year);
+			TextPrinter::Print("{}. [{}] - {} ({}) {}\n", (read ? White : Yellow), i,  mail->Sender, mail->Subject, sendTime, (read ? "" : "(*)"));
 			i++;
 		}
-		TextPrinter::Print("\n'k': add keyword \n'd': show folders\n'm': return to Menu \n", Yellow);
-		
+		TextPrinter::Print("\n'Enter': reload mails\n'k': add keyword \n'd': show folders\n'm': return to Menu \n", Yellow);
+
 		std::string choice = GetUserInput(s_label, Blue, [&](const std::string& inp) {
-			return inp == "m" || inp == "d" || inp == "k" || IsNumberFromTo(inp, 1, (int)mails.size());
+			return inp.empty() || inp == "m" || inp == "d" || inp == "k" || IsNumberFromTo(inp, 1, (int)mails.size());
 		});
 
 		m_ShowMails->SetAutoClear(true);
+		if (choice.empty())
+			return m_ShowMails;
 		if (choice == "m")
 			return m_MainMenu;
 		if (choice == "k")
