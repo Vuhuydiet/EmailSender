@@ -131,7 +131,7 @@ namespace SMTP {
 			socket->Send("Content-Type: multipart/mixed;boundary=\"" + boundary + "\"");
 		}
 		socket->Send("Message-ID: "+ Msg_ID);
-		socket->Send("DATE: " + DateMail);
+		socket->Send("Date: " + DateMail);
 		socket->Send("MIME-Version: 1.0");
 		socket->Send("User-Agent: C++ Client");
 		socket->Send("Content-Langaue: en-US");
