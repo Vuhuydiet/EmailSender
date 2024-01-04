@@ -45,15 +45,14 @@ namespace SMTP {
 		return id;
 	}
 
-	static std::string CreateDateMail(const Date& date) {
-		std::string DateMail;
-		DateMail += std::to_string(date.day) + "/";
-		DateMail += std::to_string(date.month) + "/";
-		DateMail += std::to_string(date.year) + "  ";
-		DateMail += std::to_string(date.hour) + ":";
-		DateMail += std::to_string(date.min) + ":";
-		DateMail += std::to_string(date.sec);
-		return DateMail;
+	static std::string CreateDateMail() {
+		auto currentTime = std::chrono::system_clock::now();
+		std::time_t currentTime_t = std::chrono::system_clock::to_time_t(currentTime);
+		std::tm* tmPtr = std::localtime(&currentTime_t);  
+		std::stringstream ss;
+		ss << std::put_time(tmPtr, "%a, %d %b %Y %H:%M:%S %z");
+		
+		return ss.str();
 	}
 
 	void SendFile(Ref<Socket> socket, const std::filesystem::path& filePath) {
@@ -124,7 +123,7 @@ namespace SMTP {
 		Date date;
 		const std::string boundary = CreateBoundary(date);
 		std::string Msg_ID = CreateMessageId(mail.Sender,date);
-		std::string DateMail = CreateDateMail(date);
+		std::string DateMail = CreateDateMail();
 
 		// Send Header
 		if (!mail.AttachedFilePaths.empty()) {

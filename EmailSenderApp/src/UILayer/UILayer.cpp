@@ -304,7 +304,7 @@ void UILayer::OnAttach()
 		int i = 1;
 		for (const auto& mail: mails) {
 			bool read = m_MailContainer->GetReadStatus(mail->Id);
-			TextPrinter::Print("{}. [{}] - {} ({}) {}\n", (read ? White : Yellow), i,  mail->Sender, mail->Subject, mail->SendDate.ToString(), (read ? "" : "(*)"));
+			TextPrinter::Print("{}. [{}] - {} ({}) {}\n", (read ? White : Yellow), i,  mail->Sender, mail->Subject, mail->SendDate.ConcatString(), (read ? "" : "(*)"));
 			i++;
 		}
 		TextPrinter::Print("\n'k': add keyword \n'd': show folders\n'm': return to Menu \n", Yellow);
