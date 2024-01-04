@@ -4,7 +4,7 @@
 #include "Debug/Debug.h"
 #include "MailFilter.h"
 
-#include "YAML_Converter/Converter.h"
+#include "Utils/yamlConverter.h"
 
 Library::Library(const std::filesystem::path& mailbox_dir)
 	: m_MailboxDir(mailbox_dir)
