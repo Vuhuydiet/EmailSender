@@ -243,10 +243,16 @@ void UILayer::OnAttach()
 
 		const auto& folders = m_MailContainer->GetRetrievedMails();
 		const auto& no_sorted_folders = m_MailContainer->GetAddedFolder();
+
 		int i = 1;
 		TextPrinter::Print("Folders in your account: \n");
 		for (const auto& folder_name : no_sorted_folders) {
-			TextPrinter::Print("{}. {} ({})\n", Blue, i, folder_name, folders.at(folder_name).size());
+			int notReadMailCount = 0;
+			const auto& folder = m_MailContainer->GetRetrievedMails(folder_name);
+			for (const auto& mail : folder) {
+				if (!m_MailContainer->GetReadStatus(mail->Id)) notReadMailCount++;
+			}
+			TextPrinter::Print("{}. {} ({}/{})\n", Blue, i, folder_name, notReadMailCount ,folders.at(folder_name).size());
 			i++;
 		}
 		
